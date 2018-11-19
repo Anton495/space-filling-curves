@@ -29,3 +29,9 @@ Here are the main characteristics of some curves.
 |Sepentine Curve        | 5.625 | 6.250 |   10    |
 
 The module has been tested to work on Python 3.7.0. It requires NumPy, Math and Matplotlib.
+
+
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
