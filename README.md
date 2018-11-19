@@ -5,7 +5,7 @@ This module realize poly-fractal curves generating system. It allows to generate
 Here are the main characteristics of some curves.
 
 |2D Curve               |  L_1  |  L_2  |  L_inf  |3D Curve            |  L_1  |  L_2  | L_inf |
-|-----------------------|-------|-------|---------|--------------------|-------|-------|-------|
+|:---                   | :---: | :---: |  :---:  |:---                | :---: | :---: | :---: |
 |H Curve                |   4   |   4   |    8    |Tokarev Curve       | 98.3  | 26.2  | 24.2  |
 |Sierpinski-Knopp Curve |   4   |   4   |    8    |Haverkort Curve 1   | 12.4  | 22.9  | 99.6  |
 |Beta Omega Curve       |   5   |   5   |    9    |Haverkort Curve 2   | 14.0  | 18.6  | 89.8  |
