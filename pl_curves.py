@@ -30,12 +30,3 @@ def plcurves(subdiv_n, dim, genus, number_sub):
         ax.set_zticks(ticks)
         ax.tick_params(colors = 'w')
         ax.plot(subdiv_n[:,0],subdiv_n[:,1],subdiv_n[:,2],'k')
-    
-
-    
-    
-    
-    
-    
-    
-    
