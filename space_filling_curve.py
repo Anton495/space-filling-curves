@@ -60,12 +60,21 @@ class FractalCurve:
             coordinate_subdiv_0[k,:] = (-1)**k*coordinate_subdiv_0[k,:]
         
         #Generating the 0-th curve subdivision        
-        subdiv_0 = [np.zeros((self.genus-1,self.dim)) for i in range(self.fractal)]        
+        my_dict = {}
+        for k in range(len(self.alphabet)):
+            my_dict[self.alphabet[k]] = coordinate_subdiv_0[k,:]
+    
+        subdiv_0 = [np.zeros((self.genus-1,self.dim)) for i in range(self.fractal)] 
         for l in range(self.fractal):
-            for k in range(self.genus-1):
-                for m in range(2*self.dim):
-                    if self.proto[l][k] == self.alphabet[m]:
-                        subdiv_0[l][k,:] = coordinate_subdiv_0[m,:]
+            if len(self.proto[l]) == 1:
+                for k in range(self.genus-1):
+                    subdiv_0[l][k,:] = my_dict[self.proto[l][0][k]]
+            else:
+                for k in range(self.genus-1):
+                    if len(self.proto[l][k]) == 1:
+                        subdiv_0[l][k,:] = my_dict[self.proto[l][k]]
+                    else:
+                        subdiv_0[l][k,:] = np.sum([my_dict[self.proto[l][k][m]]for m in range(len(self.proto[l][k]))],axis=0)
         return subdiv_0
         
     def get_matrix_base_maps(self):
