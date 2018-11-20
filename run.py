@@ -17,6 +17,9 @@ curve = get_Hilbert_Curve(k)
 #2d curve examples (bi-fractal)
 #curve = get_Beta_Omega_Curve(k)
 
+#2d curve examples (quater-fractal)
+#curve = get_ARW_Curve(k)
+
 #3d curve examples (mono-fractal)
 #curve = get_Tokarev_Curve(k)
 #curve = get_Haverkort_Curve_1(k)
