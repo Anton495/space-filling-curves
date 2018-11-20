@@ -138,7 +138,7 @@ class FractalCurve:
                         continue
         
             #Glaing fractions
-            P1 = [[np.concatenate((P[r][k], [self.subdiv_0[r][k]]), axis = 0) for k in range(len(self.proto[0]))] for r in range(self.fractal)]
+            P1 = [[np.concatenate((P[r][k], [self.subdiv_0[r][k]]), axis = 0) for k in range(self.genus-1)] for r in range(self.fractal)]
             P1 = [np.concatenate(P1[r]) for r in range(self.fractal)]
             P1 = [np.concatenate((P1[r], P[r][-1]), axis = 0) for r in range(self.fractal)]
             
