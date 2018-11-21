@@ -1,10 +1,10 @@
 from examples import *
 from pl_curves import plcurves
 
-#Indicate subdivision number 
+#Indicate subdivision number and run
 k = 3
 
-#Choose the curve
+#Choose the curve and run
 
 #2d curve examples (mono-fractal)
 curve = get_Hilbert_Curve(k)
