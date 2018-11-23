@@ -1,6 +1,6 @@
 # Fractals Curves
 
-This module realize poly-fractal curves generating system. It allows to generate n-dimensional curves coordinates and to plot continuous poly-fractal 2D and 3D curves.
+This module realize poly-fractal curves generating system. It allows to generate n-dimensional  continuous curves coordinates and to plot poly-fractal 2D and 3D curves.
 
 Here are the main characteristics of some curves.
 
