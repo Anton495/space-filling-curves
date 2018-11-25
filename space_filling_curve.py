@@ -38,7 +38,7 @@ class FractalCurve:
     def get_dim(self):
         
         #Is the curve mono-fractal?
-        if len(self.base_maps) == 1:
+        if self.fractal == 1:
             index_first = 0
         else:
             index_first = 1
