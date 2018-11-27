@@ -18,7 +18,7 @@ Here are the main characteristics of some curves.
 |Coil Curve             | 6.667 | 6.667 | 10.667  |
 |Peano Curve            |   8   |   8   | 10.667  |
 |**Tetra-fractal Curve**|       |       |         |
-|AR^2W^2 Curve          |  5.4  | 6.046 |   12    |
+|ARW Curve              |  5.4  | 6.046 |   12    |
 
 
 The module has been tested to work on Python 3.7.0. It requires NumPy, Math and Matplotlib.
