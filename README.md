@@ -15,7 +15,7 @@ Here are the main characteristics of some curves.
 |Hilbert Curve          |   6   |   6   |    9    |Tokarev Curve       | 24.2  | 26.2  | 98.3  |
 |Meurthe Curve          | 5.333 | 5.667 | 10.667  |
 |Sepentine Curve        | 5.625 | 6.250 |   10    |
-|Coil Curve             | 6.667 | 6.667 | 10.667  |
+|Coil Curve, R Curve    | 6.667 | 6.667 | 10.667  |
 |Peano Curve            |   8   |   8   | 10.667  |
 |**Tetra-fractal Curve**|       |       |         |
 |ARW Curve              |  5.4  | 6.046 |   12    |
