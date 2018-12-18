@@ -7,8 +7,8 @@ k = 3
 get_Curve =[#2d curve examples (mono-fractal)
             get_Hilbert_Curve(k),        # 0
             get_Peano_Curve(k),          # 1
-            get_Meurthe_Curve_Curve(k),  # 2
-            get_Coil_Curve_Curve(k),     # 3
+            get_Meurthe_Curve(k),  # 2
+            get_Coil_Curve(k),     # 3
             get_Serpentine_Curve(k),     # 4
             get_R_Curve(k),              # 5
             #2d curve examples (bi-fractal)
