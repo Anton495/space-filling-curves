@@ -18,7 +18,7 @@ def get_Peano_Curve(k):
             base_maps = [['ij','Ij','ij','iJ','IJ','iJ','ij','Ij','ij']]
     )
     
-def get_Meurthe_Curve_Curve(k):
+def get_Meurthe_Curve(k):
     return FractalCurve(
             number_sub = k,
             alphabet = 'iIjJ',
@@ -26,7 +26,7 @@ def get_Meurthe_Curve_Curve(k):
             base_maps = [['ij','Ji','ij','jI','JI','iJ','ji','Ji','ij']]
     )
     
-def get_Coil_Curve_Curve(k):
+def get_Coil_Curve(k):
     return FractalCurve(
             number_sub = k,
             alphabet = 'iIjJ',
