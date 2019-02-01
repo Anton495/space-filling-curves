@@ -133,7 +133,7 @@ class FractalCurve:
             for r in range(self.fractal): 
                 for k in range(self.genus):
                     if self.matrix_base_maps[r][k,-1] == 1:
-                        P[r][k] = np.flipud(P[r][k])
+                        P[r][k] = -np.flipud(P[r][k])
                     else:
                         continue
         
