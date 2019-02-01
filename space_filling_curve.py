@@ -10,7 +10,7 @@ class FractalCurve:
                  number_sub,
                  genus = None,
                  dim = None,
-                 fractal =None,
+                 fractal = None,
                  subdiv_0 = None, 
                  matrix_base_maps = None,
                  subdiv_n = None):
