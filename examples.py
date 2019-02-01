@@ -52,7 +52,7 @@ def get_R_Curve(k):
     
 #2d curve examples (bi-fractal)
     
-def get_Beta_Omega_Curve(k):
+def get_beta_Omega_Curve(k):
     return FractalCurve(
             number_sub = k,
             alphabet = 'iIjJ',
