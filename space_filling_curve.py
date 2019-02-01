@@ -127,5 +127,4 @@ class FractalCurve:
         
         for k in range(self.dim):
             subdiv_n[:,k] = subdiv_n[:,k] - np.amin(subdiv_n[:,k]) + 1/(2*self.genus**((self.number_sub+1)/(self.dim)))
-        
         return subdiv_n
