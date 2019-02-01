@@ -18,7 +18,7 @@ def get_Peano_Curve(k):
             base_maps = [['ij','Ij','ij','iJ','IJ','iJ','ij','Ij','ij']]
     )
     
-def get_Meurthe_Curve(k):
+def get_Meurthe_Curve_Curve(k):
     return FractalCurve(
             number_sub = k,
             alphabet = 'iIjJ',
@@ -26,7 +26,7 @@ def get_Meurthe_Curve(k):
             base_maps = [['ij','Ji','ij','jI','JI','iJ','ji','Ji','ij']]
     )
     
-def get_Coil_Curve(k):
+def get_Coil_Curve_Curve(k):
     return FractalCurve(
             number_sub = k,
             alphabet = 'iIjJ',
@@ -58,8 +58,8 @@ def get_Beta_Omega_Curve(k):
             alphabet = 'iIjJ',
             proto = [['jiJ'],
                      ['jiJ']],
-            base_maps = [['1iJ0','1Ji0','1JI1','1ij1'],
-                         ['1iJ0','1Ji0','1JI1','0jI0']]
+            base_maps = [['1iJ0','1Ji0','1ji1','1IJ1'],
+                         ['1iJ0','1Ji0','1ji1','0jI0']]
     )    
     
 #2d curve examples (quater-fractal)
@@ -72,10 +72,10 @@ def get_ARW_Curve(k):
                      ['jiJ'],
                      ['jiJ'],
                      ['jiJ']],
-            base_maps = [['3ij0','1Ji1','2Ji0','1iJ0'],
-                         ['3ji0','2iJ1','1ij0','1JI0'],
+            base_maps = [['3ij0','1jI1','2Ji0','1iJ0'],
+                         ['3ji0','2Ij1','1ij0','1JI0'],
                          ['0ji0','1Ji0','0jI0','1JI0'],
-                         ['0ij0','2Ji0','0jI0','3jI1']]
+                         ['0ij0','2Ji0','0jI0','3Ji1']]
     ) 
     
 #3d curve examples (mono-fractal)
@@ -93,7 +93,7 @@ def get_Haverkort_Curve_1(k):
             number_sub = k,
             alphabet = 'iIjJkK',
             proto = [['kjKikJK']],
-            base_maps = [['kji0','jik0','KiJ1','iKJ0','ikj1','KIj0','kIJ1','jKI1']]
+            base_maps = [['kji0','jik0','kIj1','iKJ0','IKJ1','KIj0','Kij1','Jki1']]
     ) 
 
 def get_Haverkort_Curve_2(k):
@@ -101,7 +101,7 @@ def get_Haverkort_Curve_2(k):
             number_sub = k,
             alphabet = 'iIjJkK',
             proto = [['kjKikJK']],
-            base_maps = [['kij1','kji1','KjI0','jKI1','jki0','KJi1','kJI0','iKJ0']]
+            base_maps = [['KIJ1','KJI1','KjI0','Jki1','jki0','kjI1','kJI0','iKJ0']]
     ) 
 
 #3d curve examples (bi-fractal, Haverkort curves)
@@ -120,7 +120,8 @@ def get_Luna_Curve(k):
     return FractalCurve(
             number_sub = k,
             alphabet = 'iIjJkK',
-            proto = [['kjKikJK'],['kiKjIki']],
+            proto = [['kjKikJK'],
+                     ['kiKjIki']],
             base_maps = [['1ijk','0KJi','1KiJ','1jKI','1jik','1IKj','0kJI','1kJI'],
                          ['1jik','0JKi','1iKJ','0KiJ','1KjI','1JIk','0ikj','1ikj']]
-    )
+    )    
