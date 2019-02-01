@@ -83,18 +83,10 @@ class FractalCurve:
                             matrix_base_maps[r][k,m+1] = coordinates_base_maps[l]
         
         #Reverse
-        for k in range(self.genus):
-           if self.fractal == 1:
-               if len(self.base_maps[0][0]) == (self.dim+1):
-                    matrix_base_maps[0][k,self.dim+1] = float(self.base_maps[0][k][self.dim])
-               else:
-                    continue
-           else:
-               for r in range(self.fractal):
-                   if len(self.base_maps[0][0]) == (self.dim+2):
-                       matrix_base_maps[r][k,self.dim+1] = float(self.base_maps[r][k][self.dim+1])
-                   else:
-                       continue
+        for r in range(self.fractal):
+            for k in range(self.genus):
+                if self.base_maps[r][k][-1] == '1':
+                    matrix_base_maps[r][k,-1] = 1
         
         #Curve number
         if self.fractal != 1:
