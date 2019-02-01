@@ -38,16 +38,10 @@ class FractalCurve:
     def get_dim(self):
         
         #Is the curve mono-fractal?
-        if self.fractal == 1:
-            index_first = 0
-        else:
-            index_first = 1
+        index_first = 0 if self.fractal == 1 else 1
         
         #Are fractions reversed in time?
-        if self.base_maps[0][0][-1] in ['0','1']:
-            index_last = 1
-        else:
-            index_last = 0
+        index_last = 1 if self.base_maps[0][0][-1] in ['0','1'] else 0
             
         return len(self.base_maps[0][0]) - (index_first + index_last)
     
@@ -84,10 +78,7 @@ class FractalCurve:
         for k in range(2*self.dim):
             coordinates_base_maps[k] = (-1)**k*coordinates_base_maps[k]
         
-        if self.fractal == 1:
-            a0 = 0
-        else:
-            a0 = 1
+        a0 = 0 if self.fractal == 1 else 1
         
         #Generating matrix base maps
         matrix_base_maps = [np.zeros((self.genus,self.dim+2)) for i in range(len(self.base_maps))]
