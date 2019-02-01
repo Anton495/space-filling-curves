@@ -36,14 +36,7 @@ class FractalCurve:
 
     #Finding the curve dimension
     def get_dim(self):
-        
-        #Is the curve mono-fractal?
-        index_first = 0 if self.fractal == 1 else 1
-        
-        #Are fractions reversed in time?
-        index_last = 1 if self.base_maps[0][0][-1] in ['0','1'] else 0
-            
-        return len(self.base_maps[0][0]) - (index_first + index_last)
+        return len(set(''.join(self.proto[0]).lower()))
     
     #Generating the 0-th curve subdivision
     def get_subdiv_0(self):
