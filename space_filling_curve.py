@@ -95,7 +95,7 @@ class FractalCurve:
         for n in range(subdiv_number):
         
             #Generating fractions
-            P = [[[ copysign(1,matrix[r][k][m+1])*subdiv_n[int(matrix[r][k][0])][:,int(abs(matrix[r][k][m+1]))] 
+            P = [[[ copysign(1,matrix[r][k][m+1])*subdiv_n[matrix[r][k][0]][:,int(abs(matrix[r][k][m+1]))] 
                 for k in range(self.genus)] for m in range(self.dim)] for r in range(self.fractal)]
             P = [np.stack(P[r], axis = -1) for r in range(self.fractal)]
         
