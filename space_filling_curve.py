@@ -54,7 +54,7 @@ class FractalCurve:
             return coord
         
         subdiv_0 = [list(map(my_dict.get, self.chain_code[k][0])) if len(self.chain_code[k]) == 1 
-                 else [diag_coord(m) for m in self.chain_code[k]] for k in range(self.fractal)]
+                    else [diag_coord(m) for m in self.chain_code[k]] for k in range(self.fractal)]
         
         return subdiv_0
     
@@ -90,24 +90,26 @@ class FractalCurve:
     def get_subdiv_n(self,subdiv_number):
         
         subdiv_n = np.array(self.get_subdiv_0())
+        matrix = self.base_maps_matrix
         
         for n in range(subdiv_number):
         
             #Generating fractions
-            P = [[[ copysign(1,self.base_maps_matrix[r][k][m+1])*subdiv_n[int(self.base_maps_matrix[r][k][0])][:,int(abs(self.base_maps_matrix[r][k][m+1]))] 
+            P = [[[ copysign(1,matrix[r][k][m+1])*subdiv_n[int(matrix[r][k][0])][:,int(abs(matrix[r][k][m+1]))] 
                 for k in range(self.genus)] for m in range(self.dim)] for r in range(self.fractal)]
             P = [np.stack(P[r], axis = -1) for r in range(self.fractal)]
         
             #Reversing fractons
             for r in range(self.fractal): 
                 for k in range(self.genus):
-                    if self.base_maps_matrix[r][k][-1] == 1:
+                    if matrix[r][k][-1] == 1:
                         P[r][k] = -np.flipud(P[r][k])
                     else:
                         continue
         
             #Glaing fractions
-            P1 = [[np.concatenate((P[r][k], [self.get_subdiv_0()[r][k]]), axis = 0) for k in range(self.genus-1)] for r in range(self.fractal)]
+            P1 = [[np.concatenate((P[r][k], [self.get_subdiv_0()[r][k]]), axis = 0) 
+                 for k in range(self.genus-1)] for r in range(self.fractal)]
             P1 = [np.concatenate(P1[r]) for r in range(self.fractal)]
             P1 = [np.concatenate((P1[r], P[r][-1]), axis = 0) for r in range(self.fractal)]
             
