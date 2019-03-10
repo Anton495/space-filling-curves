@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 from numpy import linspace
 from mpl_toolkits.mplot3d import Axes3D
 
-def plcurves(subdiv_n, dim, genus, number_sub):
+def plcurves(subdiv_n, dim, genus, subdiv_number):
 
     if dim == 2:
 
-        ticks = linspace(0,1,genus**(number_sub/2)+1)
+        ticks = linspace(0,1,genus**(subdiv_number/2)+1)
     
         plt.figure()
         plt.gcf().set_size_inches(9,9)
@@ -18,7 +18,7 @@ def plcurves(subdiv_n, dim, genus, number_sub):
 
     elif dim == 3:
     
-        ticks = linspace(0,1,genus**(number_sub/3)+1)
+        ticks = linspace(0,1,genus**(subdiv_number/3)+1)
     
         fig = plt.figure(figsize = (9,9))
         ax = fig.gca(projection='3d')
