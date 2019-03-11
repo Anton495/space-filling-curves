@@ -104,8 +104,6 @@ class FractalCurve:
                 for k in range(self.genus):
                     if matrix[r][k][-1] == 1:
                         P[r][k] = -np.flipud(P[r][k])
-                    else:
-                        continue
         
             #Glaing fractions
             P1 = [[np.concatenate((P[r][k], [self.get_subdiv_0()[r][k]]), axis = 0) 
