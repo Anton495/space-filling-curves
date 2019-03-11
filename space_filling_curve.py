@@ -36,7 +36,7 @@ class FractalCurve:
             coord = [0] * self.dim
             coord[k] = 1
             vect_dict[alphabet[k]] = coord
-            vect_dict[alphabet[k].upper()] = [-1*m for m in coord]
+            vect_dict[alphabet[k].upper()] = [-m for m in coord]
         
         def diag_coord(vector):
             C = [my_dict[k] for k in vector]
