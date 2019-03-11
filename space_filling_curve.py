@@ -31,22 +31,12 @@ class FractalCurve:
         alphabet = 'ijklmn'
         assert self.dim <= 6
         
-        A = [0]*self.dim
-        A = [list(A) for k in A]
+        vect_dict = {}
         for k in range(self.dim):
-            A[k][k] = 1
-
-        B = [0]*self.dim
-        B = [list(B) for k in B]
-        for k in range(self.dim):
-            B[k][k] = -1
-
-        my_dict = {}
-        for k in range(self.dim):    
-            my_dict[alphabet[k]] = A[k]
-
-        for k in range(self.dim):
-            my_dict[alphabet.upper()[k]] = B[k]
+            coord = [0] * self.dim
+            coord[k] = 1
+            vect_dict[alphabet[k]] = coord
+            vect_dict[alphabet[k].upper()] = [-1*m for m in coord]
         
         def diag_coord(vector):
             C = [my_dict[k] for k in vector]
