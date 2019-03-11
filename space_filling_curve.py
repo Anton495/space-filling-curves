@@ -28,8 +28,8 @@ class FractalCurve:
     #Generating the 0-th curve subdivision
     def get_subdiv_0(self):
 
-        alphabet = 'ijklmn'
         assert self.dim <= 6
+        alphabet = 'ijklmn'
         
         vect_dict = {}
         for k in range(self.dim):
@@ -39,26 +39,24 @@ class FractalCurve:
             vect_dict[alphabet[k].upper()] = [-m for m in coord]
         
         def diag_coord(vector):
-            C = [my_dict[k] for k in vector]
+            C = [vect_dict[k] for k in vector]
             coord = list(map(sum,zip(*C)))
             return coord
         
-        subdiv_0 = [list(map(my_dict.get, self.chain_code[k][0])) if len(self.chain_code[k]) == 1 
+        subdiv_0 = [list(map(vect_dict.get, self.chain_code[k][0])) if len(self.chain_code[k]) == 1 
                     else [diag_coord(m) for m in self.chain_code[k]] for k in range(self.fractal)]
         
         return subdiv_0
     
     #Generating the base maps matrix
     def get_base_maps_matrix(self):
-    
-        alphabet = 'ijklmn'
+        
         assert self.dim <= 6
+        alphabet = 'ijklmn'
         
         my_dict = {}
         for k in range(self.dim):    
             my_dict[alphabet[k]] = float(k)
-        
-        for k in range(self.dim):
             my_dict[alphabet.upper()[k]] = -float(k)
             
         for k in range(self.fractal+1):
@@ -73,7 +71,7 @@ class FractalCurve:
             for k in range(self.genus):
                 if self.base_maps[r][k][-1] not in ['0','1']:
                     base_maps_matrix[r][k].append(0)
-                    
+        
         return base_maps_matrix
     
     #Generating the n-th curve subdivision
