@@ -1,111 +1,125 @@
-import numpy as np
-from math import copysign
-
 class FractalCurve:
-
-    def __init__(self,chain_code,base_maps,
-                 genus = None,dim = None,fractal = None,base_maps_matrix = None):
-
-        self.chain_code = chain_code
+    
+    def __init__(self,chain_proto,base_maps,
+                 alphabet=None,dim=None,genus=None,fractal=None):
+        
+        self.chain_proto = chain_proto
         self.base_maps = base_maps
+        self.alphabet = alphabet if alphabet is not None else self.get_alphabet()
         self.dim = dim if dim is not None else self.get_dim()
         self.genus = genus if genus is not None else self.get_genus()
         self.fractal = fractal if fractal is not None else self.get_fractal()
-        self.base_maps_matrix = base_maps_matrix if base_maps_matrix is not None else self.get_base_maps_matrix()
 
-    #Finding the curve genus
-    def get_genus(self):
-        return len(self.base_maps[0])
-    
-    #Finding the curve fractality
-    def get_fractal(self):
-        return len(self.chain_code)
+    def get_alphabet(self):
+        return 'ijklmnop'
 
-    #Finding the curve dimension
     def get_dim(self):
-        return len(set(''.join(self.chain_code[0]).lower()))
-    
-    #Generating the 0-th curve subdivision
-    def get_subdiv_0(self):
+        '''get the curve dimension'''
+        return len(set(''.join(self.chain_proto[0]).lower()))
 
-        assert self.dim <= 6
-        alphabet = 'ijklmn'
+    def get_genus(self):
+        '''get the curve genus'''
+        return len(self.base_maps[0])
+
+    def get_fractal(self):
+        '''get the curve fractality'''
+        return len(self.chain_proto)
+
+    def get_curve_coord(self,chain_code):
+        '''chain code => vectors => coordinates'''
         
+        # Формируем словарь единичных векторов
         vect_dict = {}
         for k in range(self.dim):
             coord = [0] * self.dim
             coord[k] = 1
-            vect_dict[alphabet[k]] = coord
-            vect_dict[alphabet[k].upper()] = [-m for m in coord]
+            vect_dict[self.alphabet[k]] = coord
+            vect_dict[self.alphabet[k].upper()] = [-m for m in coord]
         
+        # Эта функция получает диагональный вектор из нескольких единичных векторов
+        # путем суммирования их координат. Например ij = i + j = [1,0] + [0,1] = [1,1]
         def diag_coord(vector):
-            C = [vect_dict[k] for k in vector]
-            coord = list(map(sum,zip(*C)))
+            arg = [vect_dict[k] for k in vector]
+            coord = list(map(sum,zip(*arg)))
             return coord
         
-        subdiv_0 = [list(map(vect_dict.get, self.chain_code[k][0])) if len(self.chain_code[k]) == 1 
-                    else [diag_coord(m) for m in self.chain_code[k]] for k in range(self.fractal)]
+        # Переходим от цепного кода к единичным векторам (применяем словарь)
+        a = len(''.join([''.join(k) for k in self.chain_proto]))
+        if a//self.fractal == a/self.fractal:
+            subdiv = list(map(vect_dict.get,chain_code))
+        else:
+            subdiv = [diag_coord(m) for m in chain_code]
         
-        return subdiv_0
+        # Переходим от единичных векторов к координатам кривой (суммируем координаты)
+        curve_coord = [[0]*self.dim] + subdiv        
+        for l in range(len(curve_coord)-1):
+            curve_coord[l+1] = [c + d for c, d in zip(curve_coord[l], curve_coord[l+1])]
+        
+        return curve_coord
     
-    #Generating the base maps matrix
-    def get_base_maps_matrix(self):
-        
-        assert self.dim <= 6
-        alphabet = 'ijklmn'
-        
-        my_dict = {}
-        for k in range(self.dim):    
-            my_dict[alphabet[k]] = float(k)
-            my_dict[alphabet.upper()[k]] = -float(k)
-            
-        for k in range(self.fractal+1):
-            my_dict[str(k)] = k
-            
-        base_maps_matrix = [[list(map(my_dict.get, self.base_maps[m][k])) 
-                            for k in range(self.genus)] for m in range(self.fractal)]
-        
-        [k.insert(0,0) for k in base_maps_matrix[0] if self.fractal == 1]
-        
-        for r in range(self.fractal):
-            for k in range(self.genus):
-                if self.base_maps[r][k][-1] not in ['0','1']:
-                    base_maps_matrix[r][k].append(0)
-        
-        return base_maps_matrix
+    def get_proto(self):
+        '''get the curve prototype'''
+        return [self.get_curve_coord(k) for k in self.chain_proto]
     
-    #Generating the n-th curve subdivision
-    def get_subdiv_n(self,subdiv_number):
-        
-        subdiv_n = np.array(self.get_subdiv_0())
-        matrix = self.base_maps_matrix
-        
-        for n in range(subdiv_number):
-        
-            #Generating fractions
-            P = [[[ copysign(1,matrix[r][k][m+1])*subdiv_n[matrix[r][k][0]][:,int(abs(matrix[r][k][m+1]))] 
-                for k in range(self.genus)] for m in range(self.dim)] for r in range(self.fractal)]
-            P = [np.stack(P[r], axis = -1) for r in range(self.fractal)]
-        
-            #Reversing fractons
-            for r in range(self.fractal): 
-                for k in range(self.genus):
-                    if matrix[r][k][-1] == 1:
-                        P[r][k] = -np.flipud(P[r][k])
-        
-            #Glaing fractions
-            P1 = [[np.concatenate((P[r][k], [self.get_subdiv_0()[r][k]]), axis = 0) 
-                 for k in range(self.genus-1)] for r in range(self.fractal)]
-            P1 = [np.concatenate(P1[r]) for r in range(self.fractal)]
-            P1 = [np.concatenate((P1[r], P[r][-1]), axis = 0) for r in range(self.fractal)]
-            
-            subdiv_n = P1
-        
-        #Scaling and shifting the curve
-        O = np.zeros((1,self.dim)) 
-        subdiv_n = np.concatenate((O, subdiv_n[0]), axis = 0)
-        subdiv_n = np.cumsum(subdiv_n,axis = 0)/(self.genus**((subdiv_number+1)/self.dim))
-        
+    def get_div(self):
+        '''get the curve div'''
+        return max(self.get_curve_coord(self.chain_proto[0]))[0]+1
+    
+    def get_dict_bm(self,id_bm,bm):
+        '''get base map dictonary'''    
+        dict_bm={}
         for k in range(self.dim):
-            subdiv_n[:,k] = subdiv_n[:,k] - np.amin(subdiv_n[:,k]) + 1/(2*self.genus**((subdiv_number+1)/(self.dim)))
-        return subdiv_n
+            m = bm.lower().index(id_bm[k])
+            letter = id_bm[m]
+            letter = letter if id_bm[k] == bm[m] else letter.upper()
+            dict_bm[id_bm[k]] = letter
+            dict_bm[id_bm[k].upper()] = letter.swapcase()
+                        
+        return dict_bm
+    
+    def get_fraction(self,sub,dic,inv):
+        '''apply base map and reverse to some curve fraction'''
+        fraction = [''.join(list(map(dic.get, k))) for k in sub]
+        
+        if inv == '1':
+            fraction = list(reversed(fraction))
+            fraction = [k.swapcase() for k in fraction]
+        
+        return fraction
+    
+    def get_subdiv(self,sub_numb):
+        '''get n-th curve subdivision'''
+        
+        # Добавляем номер кривой в базовые преобразования для монофракталов
+        if self.fractal != 1:   
+            base_maps = self.base_maps
+        else:
+            base_maps = [['0' + k for k in self.base_maps[0]]]  
+        
+        # Формируем список словарей для всех базовых преобразований
+        id_bm = self.alphabet[:self.dim]
+        list_dict = [[self.get_dict_bm(id_bm,base_maps[k][m][1:]) 
+                      for m in range(self.genus)] for k in range(self.fractal)]        
+        
+        # Определяем нулевое подразделение кривой
+        sub_k = self.chain_proto
+        
+        for n in range(sub_numb):
+            
+            # Формируем список преобразованных фракций
+            sub_n = [[self.get_fraction(sub_k[int(base_maps[k][m][0])],list_dict[k][m],base_maps[k][m][-1]) 
+                      for m in range(self.genus)] for k in range(self.fractal)]
+            
+            # Добавляем связующие ребра между фракциями
+            [[sub_n[k].insert(2*m+1,[self.chain_proto[k][m]])
+              for m in range(self.genus-1)] for k in range(self.fractal)]
+            
+            # Объединяем фракции и связующие ребра в один список
+            sub_n = [sum(k,[]) for k in sub_n]
+            
+            # Переопределяем (n-1)-ое на n-ое подразделение
+            sub_k = [list(k) for k in sub_n]
+            
+        subdiv = self.get_curve_coord(sub_k[0])
+        
+        return subdiv
