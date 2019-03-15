@@ -21,15 +21,15 @@ subdiv_n = subdiv_0
 for n in range(k):
     
     #Base mapping of second fraction and reverse
-    Ij = np.column_stack((-subdiv_n[:,0],subdiv_n[:,1]))
-    Ij1 = np.flipud(Ij)
+    iJ = np.column_stack((subdiv_n[:,0],-subdiv_n[:,1]))
+    iJ1 = -np.flipud(iJ)
 
     #Base mapping of third fraction and reverse
-    iJ = np.column_stack((subdiv_n[:,0],-subdiv_n[:,1]))
-    iJ1 = np.flipud(iJ)
+    Ij = np.column_stack((-subdiv_n[:,0],subdiv_n[:,1]))
+    Ij1 = -np.flipud(Ij)
     
     #Generating following subdivision
-    subdiv_n = np.concatenate([subdiv_n, j, Ij1, i, iJ1, i, subdiv_n])
+    subdiv_n = np.concatenate([subdiv_n, j, iJ1, i, Ij1, i, subdiv_n])
 
 #Joining the two triangles
 subdiv_n = np.concatenate([subdiv_n,i,-subdiv_n])
