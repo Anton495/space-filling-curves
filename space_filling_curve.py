@@ -38,7 +38,7 @@ class FractalCurve:
         
         # Эта функция получает диагональный вектор из нескольких единичных векторов
         # путем суммирования их координат. Например ij = i + j = [1,0] + [0,1] = [1,1]
-        def diag_coord(vector):
+        def get_diag_coord(vector):
             arg = [vect_dict[k] for k in vector]
             coord = list(map(sum,zip(*arg)))
             return coord
@@ -48,7 +48,7 @@ class FractalCurve:
         if a//self.fractal == a/self.fractal:
             subdiv = list(map(vect_dict.get,chain_code))
         else:
-            subdiv = [diag_coord(m) for m in chain_code]
+            subdiv = [get_diag_coord(m) for m in chain_code]
         
         # Переходим от единичных векторов к координатам кривой (суммируем координаты)
         curve_coord = [[0]*self.dim] + subdiv        
