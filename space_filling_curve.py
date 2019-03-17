@@ -118,7 +118,7 @@ class FractalCurve:
             sub_n = [sum(k,[]) for k in sub_n]
             
             # Переопределяем (n-1)-ое на n-ое подразделение
-            sub_k = [list(k) for k in sub_n]
+            sub_k = sub_n.copy()
             
         subdiv = self.get_curve_coord(sub_k[0])
         
