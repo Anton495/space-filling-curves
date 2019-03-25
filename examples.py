@@ -43,8 +43,8 @@ def get_R_curve():
 def get_beta_Omega_curve():
     return FractalCurve(
             chain_proto = ['jiJ','jiJ'],
-            base_maps = [['1iJ0','1Ji0','1ji1','1IJ1'],
-                         ['1iJ0','1Ji0','1ji1','0jI0']]
+            base_maps = [['1iJ','1Ji','1ji1','1IJ1'],
+                         ['1iJ','1Ji','1ji1','0jI' ]]
     )    
     
 #2d curve examples (quater-fractal)
@@ -69,7 +69,7 @@ def get_tokarev_curve():
 def get_haverkort_curve_1():
     return FractalCurve(
             chain_proto = ['kjKikJK'],
-            base_maps = [['kji0','jik','kIj1','iKJ','IKJ1','KIj','Kij1','Jki1']]
+            base_maps = [['kji','jik','kIj1','iKJ','IKJ1','KIj','Kij1','Jki1']]
     ) 
 
 def get_haverkort_curve_2():
