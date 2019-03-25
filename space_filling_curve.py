@@ -133,7 +133,7 @@ class FractalCurve:
             sub_n = [[self.get_fraction(sub_k[int(bms[k][m][0])],list_dict[k][m],bms[k][m][-1]) 
                       for m in range(self.genus)] for k in range(self.fractal)]
             
-            # Добавляем связующие ребра между фракциями
+            # Добавляем связующие ребра между фракциями для графика
             if plot==True:    
                 [[sub_n[k].insert(2*m+1,[self.chain_proto[k][m]])
                  for m in range(self.genus-1)] for k in range(self.fractal)]
