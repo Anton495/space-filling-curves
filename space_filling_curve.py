@@ -1,7 +1,10 @@
+from numpy import cumsum
+import itertools as it
+
 class FractalCurve:
     
     def __init__(self,chain_proto,base_maps,
-                 alphabet=None,dim=None,genus=None,fractal=None):
+                 alphabet=None,dim=None,genus=None,fractal=None,vect_dict=None):
         
         self.chain_proto = chain_proto
         self.base_maps = base_maps
@@ -9,6 +12,7 @@ class FractalCurve:
         self.dim = dim if dim is not None else self.get_dim()
         self.genus = genus if genus is not None else self.get_genus()
         self.fractal = fractal if fractal is not None else self.get_fractal()
+        self.vect_dict = vect_dict if vect_dict is not None else self.get_vect_dict()
 
     def get_alphabet(self):
         return 'ijklmnop'
@@ -23,10 +27,14 @@ class FractalCurve:
 
     def get_fractal(self):
         '''get the curve fractality'''
-        return len(self.chain_proto)
+        fractal = len(self.chain_proto)
+        # Добавляем номер кривой в базовые преобразования для монофракталов
+        if fractal == 1:
+            self.base_maps = [['0' + k for k in self.base_maps[0]]]  
+        return fractal
 
-    def get_curve_coord(self,chain_code):
-        '''chain code => vectors => coordinates'''
+    def get_vect_dict(self):
+        '''get unit and diagonal vectors dictonary'''
         
         # Формируем словарь единичных векторов
         vect_dict = {}
@@ -43,17 +51,36 @@ class FractalCurve:
             coord = list(map(sum,zip(*arg)))
             return coord
         
-        # Переходим от цепного кода к единичным векторам (применяем словарь)
+        # Проверяем наличие диагональных шагов в chain_proto
         a = len(''.join([''.join(k) for k in self.chain_proto]))
-        if a//self.fractal == a/self.fractal:
-            subdiv = list(map(vect_dict.get,chain_code))
+        if a//self.fractal != a/self.fractal:
+            # Добавляем диагональные шаги в словарь
+            all_letters = [[self.alphabet[k],self.alphabet[k].upper()] for k in range(self.dim)]
+            for m in range(2,self.dim+1):
+                all_comb_let = list(it.permutations(all_letters,m))
+                all_diag_coord = list(map(''.join, it.chain(*[it.product(*k) for k in all_comb_let])))
+                for k in all_diag_coord:
+                    vect_dict[k] = get_diag_coord(k)
+         
+        return vect_dict
+            
+    def get_curve_coord(self,chain_code,start=None):
+        '''chain code => vectors => coordinates'''
+            
+        # Переходим от цепного кода к единичным векторам (применяем словарь)    
+        subdiv = list(map(self.vect_dict.get,chain_code))
+                    
+        # Определяем начальную координату для кривой
+        if start == None:
+            curve_coord = [[0]*self.dim] + subdiv
         else:
-            subdiv = [get_diag_coord(m) for m in chain_code]
+            curve_coord = [start] + subdiv
         
         # Переходим от единичных векторов к координатам кривой (суммируем координаты)
-        curve_coord = [[0]*self.dim] + subdiv        
-        for l in range(len(curve_coord)-1):
-            curve_coord[l+1] = [c + d for c, d in zip(curve_coord[l], curve_coord[l+1])]
+        # curve_coord = list(zip(*map(it.accumulate, zip(*curve_coord))))
+        
+        # Коммутативная сумма быстрее на 20%-30%, но возвращает не list of tuple, а numpy.array
+        curve_coord = cumsum(curve_coord,axis = 0)
         
         return curve_coord
     
@@ -74,7 +101,7 @@ class FractalCurve:
             letter = letter if id_bm[k] == bm[m] else letter.upper()
             dict_bm[id_bm[k]] = letter
             dict_bm[id_bm[k].upper()] = letter.swapcase()
-                        
+        
         return dict_bm
     
     def get_fraction(self,sub,dic,inv):
@@ -87,18 +114,14 @@ class FractalCurve:
         
         return fraction
     
-    def get_subdiv(self,sub_numb):
+    def get_subdiv(self,sub_numb,plot=True):
         '''get n-th curve subdivision'''
         
-        # Добавляем номер кривой в базовые преобразования для монофракталов
-        if self.fractal != 1:   
-            base_maps = self.base_maps
-        else:
-            base_maps = [['0' + k for k in self.base_maps[0]]]  
-        
-        # Формируем список словарей для всех базовых преобразований
+        bms = self.base_maps
+        # Определяем тождественое базовое преобразование
         id_bm = self.alphabet[:self.dim]
-        list_dict = [[self.get_dict_bm(id_bm,base_maps[k][m][1:]) 
+        # Формируем список словарей для всех базовых преобразований
+        list_dict = [[self.get_dict_bm(id_bm,bms[k][m][1:]) 
                       for m in range(self.genus)] for k in range(self.fractal)]        
         
         # Определяем нулевое подразделение кривой
@@ -107,17 +130,18 @@ class FractalCurve:
         for n in range(sub_numb):
             
             # Формируем список преобразованных фракций
-            sub_n = [[self.get_fraction(sub_k[int(base_maps[k][m][0])],list_dict[k][m],base_maps[k][m][-1]) 
+            sub_n = [[self.get_fraction(sub_k[int(bms[k][m][0])],list_dict[k][m],bms[k][m][-1]) 
                       for m in range(self.genus)] for k in range(self.fractal)]
             
             # Добавляем связующие ребра между фракциями
-            [[sub_n[k].insert(2*m+1,[self.chain_proto[k][m]])
-              for m in range(self.genus-1)] for k in range(self.fractal)]
-            
-            # Объединяем фракции и связующие ребра в один список
+            if plot==True:    
+                [[sub_n[k].insert(2*m+1,[self.chain_proto[k][m]])
+                 for m in range(self.genus-1)] for k in range(self.fractal)]
+
+            # Объединяем все фракции в одну фракцию
             sub_n = [sum(k,[]) for k in sub_n]
             
-            # Переопределяем (n-1)-ое на n-ое подразделение
+            # Определяем (n-1)-ое кака n-ое подразделение
             sub_k = sub_n.copy()
             
         subdiv = self.get_curve_coord(sub_k[0])
