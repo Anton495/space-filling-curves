@@ -52,10 +52,10 @@ def get_beta_Omega_curve():
 def get_ARW_curve():
     return FractalCurve(
             chain_proto = [['i','Ij','i'],'jiJ','jiJ','jiJ'],
-            base_maps = [['3ij0','1jI1','2Ji0','1iJ0'],
-                         ['3ji0','2Ij1','1ij0','1JI0'],
-                         ['0ji0','1Ji0','0jI0','1JI0'],
-                         ['0ij0','2Ji0','0jI0','3Ji1']]
+            base_maps = [['3ij','1jI1','2Ji','1iJ' ],
+                         ['3ji','2Ij1','1ij','1JI' ],
+                         ['0ji','1Ji', '0jI','1JI' ],
+                         ['0ij','2Ji', '0jI','3Ji1']]
     ) 
     
 #3d curve examples (mono-fractal)
@@ -69,13 +69,13 @@ def get_tokarev_curve():
 def get_haverkort_curve_1():
     return FractalCurve(
             chain_proto = ['kjKikJK'],
-            base_maps = [['kji0','jik0','kIj1','iKJ0','IKJ1','KIj0','Kij1','Jki1']]
+            base_maps = [['kji0','jik','kIj1','iKJ','IKJ1','KIj','Kij1','Jki1']]
     ) 
 
 def get_haverkort_curve_2():
     return FractalCurve(
             chain_proto = ['kjKikJK'],
-            base_maps = [['KIJ1','KJI1','KjI0','Jki1','jki0','kjI1','kJI0','iKJ0']]
+            base_maps = [['KIJ1','KJI1','KjI','Jki1','jki','kjI1','kJI','iKJ']]
     ) 
 
 #3d curve examples (bi-fractal, Haverkort curves)
