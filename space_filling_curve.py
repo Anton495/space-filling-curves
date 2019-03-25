@@ -124,7 +124,7 @@ class FractalCurve:
         list_dict = [[self.get_dict_bm(id_bm,bms[k][m][1:]) 
                       for m in range(self.genus)] for k in range(self.fractal)]        
         
-        # Определяем нулевое подразделение кривой
+        # Задаем нулевое подразделение кривой
         sub_k = self.chain_proto
         
         for n in range(sub_numb):
