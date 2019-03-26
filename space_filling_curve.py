@@ -66,13 +66,16 @@ class FractalCurve:
             
     def get_curve_coord(self,chain_code,start=None):
         '''chain code => vectors => coordinates'''
+        
         # Переходим от цепного кода к единичным векторам (применяем словарь)    
         subdiv = list(map(self.vect_dict.get,chain_code))
+        
         # Определяем начальную координату для кривой
         if start == None:
             curve_coord = [[0]*self.dim] + subdiv
         else:
             curve_coord = [start] + subdiv
+            
         # Переходим от единичных векторов к координатам кривой (суммируем координаты)
         # 1 способ
         #curve_coord = list(zip(*map(it.accumulate, zip(*curve_coord))))
@@ -92,8 +95,10 @@ class FractalCurve:
     
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
+        
         # Определяем тождественое базовое преобразование
         id_bm = self.alphabet[:self.dim]
+        
         # Создаем словарь базового преобразования
         dict_bm={}
         for k in range(self.dim):
@@ -102,8 +107,10 @@ class FractalCurve:
             letter = letter if id_bm[k] == bm[m] else letter.upper()
             dict_bm[id_bm[k]] = letter
             dict_bm[id_bm[k].upper()] = letter.swapcase()
+            
         # Поворачиваем фракцию
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
+        
         # Обращаем по времени
         if bm[-1] == '1':
             fraction = list(reversed(fraction))
@@ -113,6 +120,7 @@ class FractalCurve:
     
     def get_subdiv(self,sub_numb,plot=True):
         '''get n-th curve subdivision'''
+        
         # Задаем нулевое подразделение кривой
         sub_k = self.chain_proto
         for n in range(sub_numb):
