@@ -66,19 +66,17 @@ class FractalCurve:
             
     def get_curve_coord(self,chain_code,start=None):
         '''chain code => vectors => coordinates'''
-            
         # Переходим от цепного кода к единичным векторам (применяем словарь)    
         subdiv = list(map(self.vect_dict.get,chain_code))
-                    
         # Определяем начальную координату для кривой
         if start == None:
             curve_coord = [[0]*self.dim] + subdiv
         else:
             curve_coord = [start] + subdiv
-        
         # Переходим от единичных векторов к координатам кривой (суммируем координаты)
-        # curve_coord = list(zip(*map(it.accumulate, zip(*curve_coord))))
-        
+        # 1 способ
+        #curve_coord = list(zip(*map(it.accumulate, zip(*curve_coord))))
+        # 2 способ
         # Коммутативная сумма быстрее на 20%-30%, но возвращает не list of tuple, а numpy.array
         curve_coord = cumsum(curve_coord,axis = 0)
         
@@ -92,8 +90,11 @@ class FractalCurve:
         '''get the curve div'''
         return max(self.get_curve_coord(self.chain_proto[0]))[0]+1
     
-    def get_dict_bm(self,id_bm,bm):
-        '''get base map dictonary'''    
+    def get_fraction(self,sub,bm):
+        '''apply base map and reverse to some curve fraction'''
+        # Определяем тождественое базовое преобразование
+        id_bm = self.alphabet[:self.dim]
+        # Создаем словарь базового преобразования
         dict_bm={}
         for k in range(self.dim):
             m = bm.lower().index(id_bm[k])
@@ -101,14 +102,10 @@ class FractalCurve:
             letter = letter if id_bm[k] == bm[m] else letter.upper()
             dict_bm[id_bm[k]] = letter
             dict_bm[id_bm[k].upper()] = letter.swapcase()
-        
-        return dict_bm
-    
-    def get_fraction(self,sub,dic,inv):
-        '''apply base map and reverse to some curve fraction'''
-        fraction = [''.join(list(map(dic.get, k))) for k in sub]
-        
-        if inv == '1':
+        # Поворачиваем фракцию
+        fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
+        # Обращаем по времени
+        if bm[-1] == '1':
             fraction = list(reversed(fraction))
             fraction = [k.swapcase() for k in fraction]
         
@@ -116,32 +113,23 @@ class FractalCurve:
     
     def get_subdiv(self,sub_numb,plot=True):
         '''get n-th curve subdivision'''
-        
-        bms = self.base_maps
-        # Определяем тождественое базовое преобразование
-        id_bm = self.alphabet[:self.dim]
-        # Формируем список словарей для всех базовых преобразований
-        list_dict = [[self.get_dict_bm(id_bm,bms[k][m][1:]) 
-                      for m in range(self.genus)] for k in range(self.fractal)]        
-        
         # Задаем нулевое подразделение кривой
         sub_k = self.chain_proto
-        
         for n in range(sub_numb):
-            
+
             # Формируем список преобразованных фракций
-            sub_n = [[self.get_fraction(sub_k[int(bms[k][m][0])],list_dict[k][m],bms[k][m][-1]) 
+            sub_n = [[self.get_fraction(sub_k[int(self.base_maps[k][m][0])],self.base_maps[k][m][1:]) 
                       for m in range(self.genus)] for k in range(self.fractal)]
             
             # Добавляем связующие ребра между фракциями для графика
             if plot==True:    
                 [[sub_n[k].insert(2*m+1,[self.chain_proto[k][m]])
-                 for m in range(self.genus-1)] for k in range(self.fractal)]
+                  for m in range(self.genus-1)] for k in range(self.fractal)]
 
             # Объединяем все фракции в одну фракцию
             sub_n = [sum(k,[]) for k in sub_n]
             
-            # Определяем (n-1)-ое кака n-ое подразделение
+            # Определяем (n-1)-ое как n-ое подразделение
             sub_k = sub_n.copy()
             
         subdiv = self.get_curve_coord(sub_k[0])
