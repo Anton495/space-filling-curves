@@ -121,7 +121,7 @@ class FractalCurve:
     def get_subdiv(self,sub_numb,plot=True):
         '''get n-th curve subdivision'''
         
-        # Задаем нулевое подразделение кривой
+        # Определяем нулевое подразделение кривой
         sub_k = self.chain_proto
         for n in range(sub_numb):
 
