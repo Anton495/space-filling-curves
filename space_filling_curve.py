@@ -85,14 +85,6 @@ class FractalCurve:
         
         return curve_coord
     
-    def get_proto(self):
-        '''get the curve prototype'''
-        return [self.get_curve_coord(k) for k in self.chain_proto]
-    
-    def get_div(self):
-        '''get the curve div'''
-        return max(self.get_curve_coord(self.chain_proto[0]))[0]+1
-    
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
         
