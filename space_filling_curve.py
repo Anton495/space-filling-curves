@@ -4,22 +4,22 @@ import itertools as it
 class FractalCurve:
     
     def __init__(self,chain_proto,base_maps,
-                 alphabet=None,dim=None,genus=None,fractal=None,vect_dict=None):
+                 dim=None,alph=None,genus=None,fractal=None,vect_dict=None):
         
         self.chain_proto = chain_proto
         self.base_maps = base_maps
-        self.alphabet = alphabet if alphabet is not None else self.get_alphabet()
         self.dim = dim if dim is not None else self.get_dim()
+        self.alph = alph if alph is not None else self.get_alphabet()
         self.genus = genus if genus is not None else self.get_genus()
         self.fractal = fractal if fractal is not None else self.get_fractal()
         self.vect_dict = vect_dict if vect_dict is not None else self.get_vect_dict()
 
-    def get_alphabet(self):
-        return 'ijklmnop'
-
     def get_dim(self):
         '''get the curve dimension'''
         return len(set(''.join(self.chain_proto[0]).lower()))
+
+    def get_alphabet(self):
+        return 'ijklmnop'[:self.dim]
 
     def get_genus(self):
         '''get the curve genus'''
@@ -41,8 +41,8 @@ class FractalCurve:
         for k in range(self.dim):
             coord = [0] * self.dim
             coord[k] = 1
-            vect_dict[self.alphabet[k]] = coord
-            vect_dict[self.alphabet[k].upper()] = [-m for m in coord]
+            vect_dict[self.alph[k]] = coord
+            vect_dict[self.alph[k].upper()] = [-m for m in coord]
         
         # Эта функция получает диагональный вектор из нескольких единичных векторов
         # путем суммирования их координат. Например ij = i + j = [1,0] + [0,1] = [1,1]
@@ -55,7 +55,7 @@ class FractalCurve:
         a = len(''.join([''.join(k) for k in self.chain_proto]))
         if a//self.fractal != a/self.fractal:
             # Добавляем диагональные шаги в словарь
-            all_letters = [[self.alphabet[k],self.alphabet[k].upper()] for k in range(self.dim)]
+            all_letters = [[self.alph[k],self.alph[k].upper()] for k in range(self.dim)]
             for m in range(2,self.dim+1):
                 all_comb_let = list(it.permutations(all_letters,m))
                 all_diag_coord = list(map(''.join, it.chain(*[it.product(*k) for k in all_comb_let])))
@@ -66,16 +66,12 @@ class FractalCurve:
             
     def get_curve_coord(self,chain_code,start=None):
         '''chain code => vectors => coordinates'''
-        
         # Переходим от цепного кода к единичным векторам (применяем словарь)    
         subdiv = list(map(self.vect_dict.get,chain_code))
-        
+                    
         # Определяем начальную координату для кривой
-        if start == None:
-            curve_coord = [[0]*self.dim] + subdiv
-        else:
-            curve_coord = [start] + subdiv
-            
+        curve_coord = [[0]*self.dim] + subdiv if start == None else [start] + subdiv
+        
         # Переходим от единичных векторов к координатам кривой (суммируем координаты)
         # 1 способ
         #curve_coord = list(zip(*map(it.accumulate, zip(*curve_coord))))
@@ -87,18 +83,14 @@ class FractalCurve:
     
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
-        
-        # Определяем тождественое базовое преобразование
-        id_bm = self.alphabet[:self.dim]
-        
-        # Создаем словарь базового преобразования
+        # Создаем словарь базового преобразования, например kIJ = {i:J,j:K,k:i}
         dict_bm={}
         for k in range(self.dim):
-            m = bm.lower().index(id_bm[k])
-            letter = id_bm[m]
-            letter = letter if id_bm[k] == bm[m] else letter.upper()
-            dict_bm[id_bm[k]] = letter
-            dict_bm[id_bm[k].upper()] = letter.swapcase()
+            m = bm.lower().index(self.alph[k])
+            letter = self.alph[m]
+            letter = letter if bm[m] == bm[m].lower() else letter.upper()
+            dict_bm[self.alph[k]] = letter
+            dict_bm[self.alph[k].upper()] = letter.swapcase()
             
         # Поворачиваем фракцию
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
@@ -112,9 +104,9 @@ class FractalCurve:
     
     def get_subdiv(self,sub_numb,plot=True):
         '''get n-th curve subdivision'''
-        
         # Определяем нулевое подразделение кривой
         sub_k = self.chain_proto
+        
         for n in range(sub_numb):
 
             # Формируем список преобразованных фракций
