@@ -21,4 +21,4 @@ Here are the main characteristics of some curves.
 |ARW Curve              |   5.4   |  6.046  |   12    |
 
 
-The module has been tested to work on Python 3.7.0. It requires NumPy, SymPy, itertools, functools, Math and Matplotlib.
+The module has been tested to work on Python 3.7.0. It requires NumPy, SymPy, Itertools, Functools, Math and Matplotlib.
