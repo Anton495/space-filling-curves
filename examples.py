@@ -17,7 +17,7 @@ def get_peano_curve():
 def get_meurthe_curve():
     return FractalCurve(
             chain_proto = ['jjiJJijj'],
-            base_maps = [['ij','Ji','ij','jI','JI','iJ','ji','Ji','ij']]
+            base_maps = [['ji','Ji','ij','jI','JI','iJ','ji','Ji','ij']]
     )
     
 def get_coil_curve():
