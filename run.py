@@ -27,3 +27,9 @@ get_curve =[#2d curve examples (mono-fractal)
 curve = get_curve[curve_number]
 
 plot_curve(curve.get_subdiv(subdiv_number), curve.dim, curve.genus, subdiv_number)
+
+junctions = curve.get_junctions()
+print(*junctions,sep='\n')
+
+vertex_moments = curve.get_vertex_moments()
+print('моменты -',vertex_moments)
