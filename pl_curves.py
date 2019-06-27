@@ -6,7 +6,7 @@ def plot_curve(subdiv_n, dim, genus, sub_numb):
     
     #Масштабируем координаты, делим все значения на genus**((sub_numb+1)/dim)
     subdiv_n = [[i/(genus**((sub_numb+1)/dim)) for i in subdiv_n[j]] for j in range(len(subdiv_n))]   
-    #Находим минимум по каждой коодинате x,y,z b и т.д., 
+    #Находим минимум по каждой коодинате x,y,z b и т.д.,
     #это необходимо для кривых, у которых точки входа и выхода находятся не в вершинах 
     min_col = [min([row[i] for row in subdiv_n]) for i in range(dim)]
     #Сдвиг всех координат на 1/(2*genus**((sub_numb+1)/(dim))) с учетом минимальных значений по координатам
@@ -24,7 +24,7 @@ def plot_curve(subdiv_n, dim, genus, sub_numb):
         ticks = linspace(genus,sub_numb)
     
         plt.figure()
-        plt.gcf().set_size_inches(9,9)
+        plt.gcf().set_size_inches(8.5,8.5)
         plt.xticks(ticks,[])
         plt.yticks(ticks,[])
         plt.grid(True)
@@ -37,7 +37,7 @@ def plot_curve(subdiv_n, dim, genus, sub_numb):
     
         ticks = linspace(genus,sub_numb)
     
-        fig = plt.figure(figsize = (9,9))
+        fig = plt.figure(figsize = (8.5,8.5))
         ax = fig.gca(projection='3d')
         ax.set_xlim(0,1)
         ax.set_ylim(0,1)
