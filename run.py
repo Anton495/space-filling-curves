@@ -29,7 +29,7 @@ curve = get_curve[curve_number]
 sub = curve.get_subdiv(subdiv_number,plot=True)
 sub = curve.get_curve_coord(sub[0])
 
-plot_curve(sub, curve.dim, curve.genus, subdiv_number)
+plottting(sub, curve.dim, curve.genus, subdiv_number)
 
 junctions = curve.get_junctions()
 print(*junctions,sep='\n')
