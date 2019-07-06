@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(sys.argv[0])+'/..')
 
 import numpy as np
-from pl_curves import plot_curve
+from plotting import plot_curve
 
 #Indicate subdivision number and run
 k = 2
