@@ -1,5 +1,5 @@
 from examples import *
-from pl_curves import plot_curve
+from plot_curves import plot_curve
 
 #Indicate subdivision number,curve number and run
 subdiv_number = 4
@@ -29,7 +29,7 @@ curve = get_curve[curve_number]
 sub = curve.get_subdiv(subdiv_number,plot=True)
 sub = curve.get_curve_coord(sub[0])
 
-plottting(sub, curve.dim, curve.genus, subdiv_number)
+plot_curve(sub, curve.dim, curve.genus, subdiv_number)
 
 junctions = curve.get_junctions()
 print(*junctions,sep='\n')
