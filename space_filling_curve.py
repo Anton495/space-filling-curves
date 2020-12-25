@@ -87,7 +87,7 @@ class FractalCurve:
     
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
-        # Создаем словарь базового преобразования, например kIJ = {i:J,j:K,k:i}
+        # Создаем словарь базового преобразования, например kIJ означает, что k->i, I->j, J->k
         dict_bm={}
         for k in range(self.dim):
             dict_bm[bm[k]] = self.alph[k]
