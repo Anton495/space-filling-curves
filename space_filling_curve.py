@@ -90,11 +90,8 @@ class FractalCurve:
         # Создаем словарь базового преобразования, например kIJ = {i:J,j:K,k:i}
         dict_bm={}
         for k in range(self.dim):
-            m = bm.lower().index(self.alph[k])
-            letter = self.alph[m]
-            letter = letter if bm[m] == bm[m].lower() else letter.upper()
-            dict_bm[self.alph[k]] = letter
-            dict_bm[self.alph[k].upper()] = letter.swapcase()
+            dict_bm[bm[k]] = self.alph[k]
+            dict_bm[bm[k].swapcase()] = self.alph[k].upper()
             
         # Поворачиваем фракцию (применяем словарь)
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
