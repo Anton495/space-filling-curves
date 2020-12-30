@@ -93,3 +93,10 @@ def get_luna_curve():
             base_maps = [['1ijk','0KJi','1KiJ','1jKI','1jik','1IKj','0kJI','1kJI'],
                          ['1jik','0JKi','1iKJ','0KiJ','1KjI','1JIk','0ikj','1ikj']]
     )    
+
+def get_17_curve():
+    return FractalCurve(
+            chain_proto = ['jkiKJkI','jiJkjIJ'],
+            base_maps = [['1KIJ1','0KiJ','1kji','0jKi1','1jKI','0kIJ','1KJi','1IKj'],
+                         ['1KIJ1', '0Ijk1', '0jiK1', '0KJI1', '0kIj1', '0ijK1', '0IjK', '1JIk']]  
+    )
