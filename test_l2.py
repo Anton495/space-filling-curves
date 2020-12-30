@@ -79,7 +79,7 @@ def get_moment_sub_k(moments,n):
     
         moment_sub_k = last_moments
         
-        moment_sub_k.append(den)
+    moment_sub_k.append(den)
         
     return [int32(k) for k in moment_sub_k]
 
