@@ -78,7 +78,7 @@ def get_haverkort_curve_2():
             base_maps = [['KIJ1','KJI1','KjI','Jki1','jki','kjI1','kJI','iKJ']]
     ) 
 
-#3d curve examples (bi-fractal, Haverkort curves)
+#3d curve examples (bi-fractal)
     
 def get_neptunus_curve():
     return FractalCurve(
