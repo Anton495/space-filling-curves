@@ -3,7 +3,7 @@ import numpy as np
 import time
 from numba import njit, float64, int32, prange
 
-'''Тестовый модель для 2-адических кривых'''
+'''Тестовый модуль для 2-адических кривых'''
 
 #curve = get_hilbert_curve()
 #curve = get_beta_Omega_curve()
