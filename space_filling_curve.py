@@ -87,7 +87,8 @@ class FractalCurve:
     
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
-        # Создаем словарь базового преобразования, например kIJ означает, что k->i, I->j, J->k
+        # Создаем словарь базового преобразования, например kIJ = {k->i,I->j,J->k} 
+        # плюс его инверсия {K->I,i->j,j->K} 
         dict_bm={}
         for k in range(self.dim):
             dict_bm[bm[k]] = self.alph[k]
@@ -171,7 +172,7 @@ class FractalCurve:
         
         return con_junction
 
-    def get_bm_bm(self,id_bm,bm,bm2):
+    def get_bm_bm(self,id_bm,bm2,bm):
         '''Возвращает базовое преобразование базового преобразования. Например bm2(bm) = KiJ(jkI)'''
         new_bm = ''
         for l in range(1,self.dim+1):
@@ -231,8 +232,8 @@ class FractalCurve:
         for r in range(self.fractal):
             for l in range(self.genus-1):
                 for k in range(n-2,-1,-1):
-                    first[r][l][-1] = self.get_bm_bm(id_bm,first[r][l][-1],first[r][l][k])
-                    second[r][l][-1] = self.get_bm_bm(id_bm,second[r][l][-1],second[r][l][k])
+                    first[r][l][-1] = self.get_bm_bm(id_bm,first[r][l][k],first[r][l][-1])
+                    second[r][l][-1] = self.get_bm_bm(id_bm,second[r][l][k],second[r][l][-1])
 
         jun = []
         for r in range(self.fractal):    
@@ -253,6 +254,8 @@ class FractalCurve:
         
         # Приводим стыки на первом подразделении к каноническому виду
         junctions = set([self.get_con_junction(id_bm,k) for k in all_junctions_sub_1])
+        # Нормализуем стыки
+        junctions = set([self.get_time_norm(k) for k in junctions])
         
         for k in range(2,20):
             jun = self.get_jun(id_bm,k)
@@ -260,12 +263,52 @@ class FractalCurve:
             N = len(junctions)
             junctions = junctions.union(jun)
             
+            # Нормализуем стыки
+            junctions = set([self.get_time_norm(k) for k in junctions])
+            
             if N == len(junctions):
                 break
             
-        print('глубина кривой -',k-1)
+        #print('глубина кривой -',k-1)
             
         return sorted(junctions)
+    
+    def get_time_norm(self,jun0):
+        
+        id_bm = 'n' + self.alph
+        
+        if jun0[0][-1]=='1' and jun0[1][-1]=='1':
+            
+            jun1 = list(reversed(jun0))
+            jun2 = [jun1[0][:-1],jun1[1][:-1]]
+            
+            new_jun = self.get_con_junction(id_bm,jun2)
+            
+            return new_jun
+        
+        elif int(jun0[0][0]) > int(jun0[1][0]):
+            
+            if jun0[0][-1]=='1' and jun0[1][-1]!='1':
+                
+                jun1 = list(reversed(jun0))
+                jun2 = [jun1[0],jun1[1][:-1]]
+                jun3 = [jun2[0]+'1',jun2[1]]
+                
+                new_jun = self.get_con_junction(id_bm,jun3)
+                
+                return new_jun
+                
+            elif jun0[0][-1]!='1' and jun0[1][-1]=='1':
+                
+                jun1 = list(reversed(jun0))
+                jun2 = [jun1[0][:-1],jun1[1]]
+                jun3 = [jun2[0],jun2[1]+'1']
+                
+                new_jun = self.get_con_junction(id_bm,jun3)
+                
+                return new_jun
+            
+        return jun0
     
     def get_all_vertices(self):
         
@@ -319,9 +362,9 @@ class FractalCurve:
             for k in range(2**self.dim):
                 A[k,subfractions_numb[l][k]] -= sp.Rational(1,self.genus)
                 B[k] = sp.Rational(fractions_numb[l][k],self.genus)
-            vertex_moments = A.inv().dot(B)
+            vertex_moments = A.inv()*B.T  #.dot(B)
             all_vertex_moments.append(vertex_moments)
-
+        
         def lcm(a, b):
             '''Функция находит общий знаменатель для пары чисел'''
             return int(a * b / gcd(a, b))
@@ -343,6 +386,9 @@ class FractalCurve:
         # Приводим моменты к целым числам  
         all_vertex_moments = [[all_vertex_moments[l][k]*common_denominators 
                                for k in range(2**self.dim)] for l in range(self.fractal)]
+        
+        
+        all_vertex_moments = [[int(all_vertex_moments[l][k]) for k in range(2**self.dim)] for l in range(self.fractal)]
         
         # Добавляем общий знаменатель к списку моментов
         all_vertex_moments.append(common_denominators)
