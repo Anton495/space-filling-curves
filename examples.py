@@ -19,12 +19,12 @@ def get_meurthe_curve():
             chain_proto = ['jjiJJijj'],
             base_maps = [['ji','Ji','ij','jI','JI','iJ','ji','Ji','ij']]
     )
-    
+
 def get_coil_curve():
     return FractalCurve(
             chain_proto = ['jjiJJijj'],
             base_maps = [['ji','Ji','ji','jI','JI','jI','ji','Ji','ji']]
-    ) 
+    )
     
 def get_serpentine_curve():
     return FractalCurve(
@@ -54,9 +54,9 @@ def get_ARW_curve():
             chain_proto = [['i','Ij','i'],'jiJ','jiJ','jiJ'],
             base_maps = [['3ij','1jI1','2Ji','1iJ' ],
                          ['3ji','2Ij1','1ij','1JI' ],
-                         ['0ji','1Ji', '0jI','1JI' ],
-                         ['0ij','2Ji', '0jI','3Ji1']]
-    ) 
+                         ['0ji','1Ji' ,'0jI','1JI' ],
+                         ['0ij','2Ji' ,'0jI','3Ji1']]
+    )
     
 #3d curve examples (mono-fractal)
 
@@ -66,10 +66,40 @@ def get_tokarev_curve():
             base_maps = [['jki','kij','kij','iJK','iJK','KIj','KIj','JkI']]
     ) 
 
+def get_peano5_curve():
+    return FractalCurve(
+            chain_proto = ['jiJijjIIjjiJijiiJIJiJIJi'],
+            base_maps = [['jI1','ij','ij','Ji1','jI1',
+                          'jI1','jI1','IJ','IJ','jI1',
+                          'ij','ij','Ji1','jI1','ij',
+                          'ij','ij','IJ','Ji1','Ji1',
+                          'ij','IJ','Ji1','Ji1','ij',
+                          ]]
+    ) 
+    
+def get_peano7_curve():
+    return FractalCurve(
+            chain_proto = ['jiJijiJijjIjijIIJJIIjijIjjiJijiJijiiJIJiJIJiJIJi'],
+            base_maps = [['jI1','ij','ij','Ji1','jI1','ij','ij',
+                           'Ji1','jI1','jI1','jI1','IJ','ij','jI1',
+                           'jI1','IJ','Ji1','Ji1','IJ','IJ','IJ',
+                           'ij','jI1','jI1','IJ','jI1','ij','ij',
+                           'Ji1','jI1','ij','ij','Ji1','jI1','ij',
+                           'ij','ij','IJ','Ji1','Ji1','ij','IJ',
+                           'Ji1','Ji1','ij','IJ','Ji1','Ji1','ij',
+                           ]]
+    )
+    
+def get_bauman_curve():
+    return FractalCurve(
+            chain_proto = ['ijIjiiJJ'],
+            base_maps = [['ij','ji','jI1','iJ1','ij','ij','Ij1','Ji1','Ji1']]
+    )
+
 def get_haverkort_curve_1():
     return FractalCurve(
             chain_proto = ['kjKikJK'],
-            base_maps = [['kji','jik','kIj1','iKJ','IKJ1','KIj','Kij1','Jki1']]
+            base_maps = [['kji','kij','kIj1','iKJ','IKJ1','KIj','Kij1','Jki1']]
     ) 
 
 def get_haverkort_curve_2():
@@ -78,7 +108,7 @@ def get_haverkort_curve_2():
             base_maps = [['KIJ1','KJI1','KjI','Jki1','jki','kjI1','kJI','iKJ']]
     ) 
 
-#3d curve examples (bi-fractal)
+#3d curve examples (bi-fractal, Haverkort curves)
     
 def get_neptunus_curve():
     return FractalCurve(
@@ -100,3 +130,4 @@ def get_17_curve():
             base_maps = [['1KIJ1','0KiJ','1kji','0jKi1','1jKI','0kIJ','1KJi','1IKj'],
                          ['1KIJ1', '0Ijk1', '0jiK1', '0KJI1', '0kIj1', '0ijK1', '0IjK', '1JIk']]  
     )
+
