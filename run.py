@@ -1,5 +1,5 @@
 from examples import *
-from plot_curves import plot_curve
+from plotting import plot_curve
 
 #Indicate subdivision number,curve number and run
 subdiv_number = 4
