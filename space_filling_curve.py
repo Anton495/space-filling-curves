@@ -327,70 +327,68 @@ class FractalCurve:
     
     def get_vertex_moments(self):
         
-        proto = self.get_proto()            
+        proto = self.get_proto()
         all_vertices = self.get_all_vertices()
         
         # Находим номера фракций, которые содержат вершины прототипа
         fractions_numb = []
         for l in range(self.fractal):
-            fraction_numb = []
             for k in range(2**self.dim):
-                fraction_numb.append(proto[l].index(all_vertices[l][k]))
-            fractions_numb.append(fraction_numb)
-        
+                fractions_numb.append(proto[l].index(all_vertices[l][k]))
+                
         # Находим номера вершин в подфракциях, попадающих в вершины прототипа
         sub_1 = self.get_subdiv(1,plot=False)
         sub_1_coord = [self.get_curve_coord(k) for k in sub_1]
         subfractions_numb = []
+        reverse_time = sp.zeros(1,2**self.dim*self.fractal)
         for l in range(self.fractal):
-            subfraction_numb = []
+            #Находим сдвиг по всем координатам (для реберных и граневых кривых)
             shift_coord = [min([row[k] for row in sub_1_coord[l]]) for k in range(self.dim)]
-            for k in range(2**self.dim):            
-                norm_coord = tuple([all_vertices[l][k][m]*self.div/(self.div-1) + shift_coord[m] for m in range(self.dim)])
-                D = sub_1_coord[l].index(norm_coord)%(2**self.dim-1)
-                subfraction_numb.append(D)
-                
-            if subfraction_numb[-1]==0: subfraction_numb[-1] = 2**self.dim-1
-
-            subfractions_numb.append(subfraction_numb)
-        
-        # Составляем систему линейных уравнений и решаем ее
-        all_vertex_moments = []
-        for l in range(self.fractal):
-            A = sp.eye(2**self.dim)
-            B = sp.zeros(1,2**self.dim)
             for k in range(2**self.dim):
-                A[k,subfractions_numb[l][k]] -= sp.Rational(1,self.genus)
-                B[k] = sp.Rational(fractions_numb[l][k],self.genus)
-            vertex_moments = A.inv()*B.T  #.dot(B)
-            all_vertex_moments.append(vertex_moments)
+                #Последовательно сдвигаем и масштабируем каждую вершину прототипа          
+                norm_coord = tuple([all_vertices[l][k][m]*self.div/(self.div-1) + 
+                                    shift_coord[m] for m in range(self.dim)])
+                #Находим номер вершины во фракции, которая сототвествует вершине прототипа 
+                i = sub_1_coord[l].index(norm_coord)-fractions_numb[k+l*2**self.dim]*(2**self.dim-1)
+                #Проверяем есть ли обращение по времени
+                if self.base_maps[l][k][-1]=='1':
+                    i = 2**self.dim-1 - i
+                    reverse_time[k+l*2**self.dim] = 1
+                #Определяем к какой кривой принадлежит этот момент
+                m = int(self.base_maps[l][k][0])*(2**self.dim)    
+                subfractions_numb.append(i+m)
+
+        all_vertex_moments = []
+        A = sp.eye(2**self.dim*self.fractal)
+        B = sp.zeros(1,2**self.dim*self.fractal)
+        for k in range(2**self.dim*self.fractal):
+            if reverse_time[k] == 1:
+                A[k,subfractions_numb[k]] += sp.Rational(1,self.genus)
+                B[k] = sp.Rational(1+fractions_numb[k],self.genus)
+            else:    
+                A[k,subfractions_numb[k]] -= sp.Rational(1,self.genus)
+                B[k] = sp.Rational(fractions_numb[k],self.genus)
+        all_vertex_moments = A.inv()*B.T #.dot(B)
         
         def lcm(a, b):
-            '''Функция находит общий знаменатель для пары чисел'''
             return int(a * b / gcd(a, b))
 
         def lcms(*numbers):
-            '''Функция находит общий знаменатель для списка чисел'''
             return reduce(lcm, numbers)
-        
+
         # Находим знаменатели всех моментов
-        all_denominators = []
-        for l in range(self.fractal):    
-            denominators = [all_vertex_moments[l][k].q for k in range(2**self.dim)]
-            all_denominators.append(denominators)
+        all_den = [all_vertex_moments[k].q for k in range(2**self.dim*self.fractal)]
 
         # Находим общий знаменатель для всех моментов
-        all_denominators = sum(all_denominators,[])
-        common_denominators = lcms(*all_denominators)
-                
+        common_den = lcms(*all_den)
+
         # Приводим моменты к целым числам  
-        all_vertex_moments = [[all_vertex_moments[l][k]*common_denominators 
-                               for k in range(2**self.dim)] for l in range(self.fractal)]
+        all_vertex_moments = [int(all_vertex_moments[k]*common_den) for k in range(2**self.dim*self.fractal)]
+
+        vertex_moments = []
+        for l in range(self.fractal):
+            vertex_moments.append(all_vertex_moments[l*2**self.dim:(l+1)*2**self.dim])
+
+        vertex_moments.append(common_den)
         
-        
-        all_vertex_moments = [[int(all_vertex_moments[l][k]) for k in range(2**self.dim)] for l in range(self.fractal)]
-        
-        # Добавляем общий знаменатель к списку моментов
-        all_vertex_moments.append(common_denominators)
-        
-        return all_vertex_moments
+        return vertex_moments
