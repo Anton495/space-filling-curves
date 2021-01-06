@@ -99,7 +99,7 @@ class FractalCurve:
         
         # Обращаем по времени
         if bm[-1] == '1':
-            fraction = list(reversed(fraction))
+            fraction.reverse()
             fraction = [k.swapcase() for k in fraction]
         
         return fraction
