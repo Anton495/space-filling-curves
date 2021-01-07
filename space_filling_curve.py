@@ -31,7 +31,7 @@ class FractalCurve:
 
     def get_div(self):
         '''get the curve div'''
-        return int(self.genus**(1/self.dim)) #max(self.get_curve_coord(self.chain_proto[0]))[0]+1
+        return int(self.genus**(1/self.dim))
 
     def get_fractal(self):
         '''get the curve fractality'''
