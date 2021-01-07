@@ -3,7 +3,7 @@ import numpy as np
 import time
 from numba import njit, float64, int32, prange
 
-'''Тестовый модуль для 2-адических кривых'''
+'''Тестовый модуль для вычисления стыков в l2 '''
 
 #curve = get_hilbert_curve()
 #curve = get_beta_Omega_curve()
@@ -101,7 +101,7 @@ def get_junction_ratio(junction, n):
     if bm2[-1] == '1':
         second_moments = np.flip(moment_sub_k[-1]*curve.genus**n - second_moments)
     
-    d = np.arange(0, curve.genus**(n+1), curve.genus)
+    d = np.arange(0, 2**curve.dim*curve.genus**(n), 2**curve.dim)
     d = np.flip(d)
         
     first_moments = np.delete(first_moments, d, 0)
