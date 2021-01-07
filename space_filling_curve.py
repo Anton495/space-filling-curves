@@ -88,11 +88,14 @@ class FractalCurve:
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
         # Создаем словарь базового преобразования, например kIJ = {k->i,I->j,J->k} 
-        # плюс его инверсия {K->I,i->j,j->K} 
+        # и его инверсию {K->I,i->j,j->K} 
         dict_bm={}
         for k in range(self.dim):
             dict_bm[bm[k]] = self.alph[k]
             dict_bm[bm[k].swapcase()] = self.alph[k].upper()
+            
+            #dict_bm[self.alph[k]] = bm[k]
+            #dict_bm[self.alph[k].upper()] = bm[k].swapcase()
             
         # Поворачиваем фракцию (применяем словарь)
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
@@ -103,6 +106,21 @@ class FractalCurve:
             fraction = [k.swapcase() for k in fraction]
         
         return fraction
+    
+    def get_all_vertices(self):
+        '''Функция находит координаты вершин прототипов, в порядке их прохождения'''
+        proto = self.get_proto()
+        
+        all_vertices = []
+        max_coord = self.div-1
+        for l in range(self.fractal):
+            vertices = []
+            for k in range(self.genus):
+                new_vertice = tuple([k for k in proto[l][k] if k in [0,max_coord]])
+                if len(new_vertice)==self.dim: vertices.append(new_vertice)
+            all_vertices.append(vertices)
+        
+        return all_vertices
     
     def vertex_chain_proto(self):
         '''Функция находит цепной код, построенный по вершинам прототипов'''
@@ -152,10 +170,11 @@ class FractalCurve:
         
         return sub_k
     
-    def get_con_junction(self,id_bm,junction):
+    def get_con_junction(self,junction):
         '''Функция приводит стык к каноническому виду'''
         bm2 = ''
-        for l in range(1,self.dim+1):
+        id_bm = self.alph
+        for l in range(self.dim):
             m = junction[0].lower().index(id_bm[l])
             if junction[0][m] == junction[0][m].upper():
                 bm2 = bm2 + junction[1][m].swapcase()
@@ -165,19 +184,20 @@ class FractalCurve:
         if junction[0][-1] == '1': id_bm = id_bm + '1'
         if junction[1][-1] == '1': bm2 = bm2 + '1'
             
-        bm1 = junction[0][0] + id_bm[1:]
+        bm1 = junction[0][0] + id_bm
         bm2 = junction[1][0] + bm2
             
         con_junction = (bm1,bm2)
         
         return con_junction
 
-    def get_bm_bm(self,id_bm,bm2,bm):
+    def get_bm_bm(self,bm2,bm):
         '''Возвращает базовое преобразование базового преобразования. Например bm2(bm) = KiJ(jkI)'''
         new_bm = ''
+        id_bm = 'n' + self.alph
         for l in range(1,self.dim+1):
             m = id_bm.index(bm2[l].lower())   
-            if bm[m]  == bm[m] .upper():
+            if bm[m]  == bm[m].upper():
                 new_bm = new_bm + bm[m].upper() if bm2[l] == bm2[l].lower() else new_bm + bm[m].lower()
             else:
                 new_bm = new_bm + bm[m].upper() if bm2[l] == bm2[l].upper() else new_bm + bm[m].lower() 
@@ -215,7 +235,7 @@ class FractalCurve:
         
         return new_base
 
-    def get_jun(self,id_bm,n):
+    def get_jun(self,n):
         '''Функция находит все стыки на n-ом подразделении'''
         base = self.base_maps
 
@@ -232,33 +252,66 @@ class FractalCurve:
         for r in range(self.fractal):
             for l in range(self.genus-1):
                 for k in range(n-2,-1,-1):
-                    first[r][l][-1] = self.get_bm_bm(id_bm,first[r][l][k],first[r][l][-1])
-                    second[r][l][-1] = self.get_bm_bm(id_bm,second[r][l][k],second[r][l][-1])
+                    first[r][l][-1] = self.get_bm_bm(first[r][l][k],first[r][l][-1])
+                    second[r][l][-1] = self.get_bm_bm(second[r][l][k],second[r][l][-1])
 
         jun = []
         for r in range(self.fractal):    
             for k in range(self.genus-1):
                 jun = jun + [[first[r][k][-1],second[r][k][-1]]]
 
-        jun = set([self.get_con_junction(id_bm,k) for k in jun])
+        jun = set([self.get_con_junction(k) for k in jun])
 
         return jun
 
+    def get_time_norm(self,jun0):
+        '''Функция выполняет нормировку стыков с обращением по времени'''
+        if jun0[0][-1]=='1' and jun0[1][-1]=='1':
+            
+            jun1 = list(reversed(jun0))
+            jun2 = [jun1[0][:-1],jun1[1][:-1]]
+            
+            new_jun = self.get_con_junction(jun2)
+            
+            return new_jun
+        
+        elif int(jun0[0][0]) > int(jun0[1][0]):
+            
+            if jun0[0][-1]=='1' and jun0[1][-1]!='1':
+                
+                jun1 = list(reversed(jun0))
+                jun2 = [jun1[0],jun1[1][:-1]]
+                jun3 = [jun2[0]+'1',jun2[1]]
+                
+                new_jun = self.get_con_junction(jun3)
+                
+                return new_jun
+                
+            elif jun0[0][-1]!='1' and jun0[1][-1]=='1':
+                
+                jun1 = list(reversed(jun0))
+                jun2 = [jun1[0][:-1],jun1[1]]
+                jun3 = [jun2[0],jun2[1]+'1']
+                
+                new_jun = self.get_con_junction(jun3)
+                
+                return new_jun
+            
+        return jun0
+
     def get_junctions(self):
         '''Функция находит все стыки кривой'''
-        id_bm = 'n' + self.alph
-        
         # Находим все стыки на первом подразделении
         all_junctions_sub_1 = [[self.base_maps[r][k],self.base_maps[r][k+1]] 
                                 for k in range(self.genus-1) for r in range(self.fractal)]
         
         # Приводим стыки на первом подразделении к каноническому виду
-        junctions = set([self.get_con_junction(id_bm,k) for k in all_junctions_sub_1])
+        junctions = set([self.get_con_junction(k) for k in all_junctions_sub_1])
         # Нормализуем стыки
         junctions = set([self.get_time_norm(k) for k in junctions])
         
         for k in range(2,20):
-            jun = self.get_jun(id_bm,k)
+            jun = self.get_jun(k)
             
             N = len(junctions)
             junctions = junctions.union(jun)
@@ -273,60 +326,8 @@ class FractalCurve:
             
         return sorted(junctions)
     
-    def get_time_norm(self,jun0):
-        
-        id_bm = 'n' + self.alph
-        
-        if jun0[0][-1]=='1' and jun0[1][-1]=='1':
-            
-            jun1 = list(reversed(jun0))
-            jun2 = [jun1[0][:-1],jun1[1][:-1]]
-            
-            new_jun = self.get_con_junction(id_bm,jun2)
-            
-            return new_jun
-        
-        elif int(jun0[0][0]) > int(jun0[1][0]):
-            
-            if jun0[0][-1]=='1' and jun0[1][-1]!='1':
-                
-                jun1 = list(reversed(jun0))
-                jun2 = [jun1[0],jun1[1][:-1]]
-                jun3 = [jun2[0]+'1',jun2[1]]
-                
-                new_jun = self.get_con_junction(id_bm,jun3)
-                
-                return new_jun
-                
-            elif jun0[0][-1]!='1' and jun0[1][-1]=='1':
-                
-                jun1 = list(reversed(jun0))
-                jun2 = [jun1[0][:-1],jun1[1]]
-                jun3 = [jun2[0],jun2[1]+'1']
-                
-                new_jun = self.get_con_junction(id_bm,jun3)
-                
-                return new_jun
-            
-        return jun0
-    
-    def get_all_vertices(self):
-        
-        proto = self.get_proto()
-        
-        all_vertices = []
-        max_coord = self.div-1
-        for l in range(self.fractal):
-            vertices = []
-            for k in range(self.genus):
-                new_vertice = tuple([k for k in proto[l][k] if k in [0,max_coord]])
-                if len(new_vertice)==self.dim: vertices.append(new_vertice)
-            all_vertices.append(vertices)
-        
-        return all_vertices
-    
     def get_vertex_moments(self):
-        
+        '''Функция находит вершинные моменты'''
         proto = self.get_proto()
         all_vertices = self.get_all_vertices()
         
