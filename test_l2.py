@@ -3,7 +3,7 @@ import numpy as np
 import time
 from numba import njit, float64, int32, prange
 
-'''Тестовый модуль для вычисления стыков в l2 '''
+'''Тестовый модуль для вычисления стыков в l2'''
 
 #curve = get_hilbert_curve()
 #curve = get_beta_Omega_curve()
