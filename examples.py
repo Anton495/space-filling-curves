@@ -1,4 +1,5 @@
 from space_filling_curve import FractalCurve
+from convert_bm import convert_bm
 
 #2d curve examples (mono-fractal)
 
@@ -124,10 +125,11 @@ def get_luna_curve():
                          ['1jik','0JKi','1iKJ','0KiJ','1KjI','1JIk','0ikj','1ikj']]
     )    
 
+#3d curve examples (bi-fractal, new curves)
+
 def get_17_curve():
     return FractalCurve(
             chain_proto = ['jkiKJkI','jiJkjIJ'],
-            base_maps = [['1KIJ1','0KiJ','1kji','0jKi1','1jKI','0kIJ','1KJi','1IKj'],
-                         ['1KIJ1', '0Ijk1', '0jiK1', '0KJI1', '0kIj1', '0ijK1', '0IjK', '1JIk']]  
-    )
+            base_maps = convert_bm([['1JKI~','0jKI','1kji','0kiJ~','1KiJ','0JKi','1kJI','1IkJ'],
+                                    ['1JKI~','0Ijk~','0jiK~','0KJI~','0Jki~','0ijK~','0IjK','1JIk']])
 
