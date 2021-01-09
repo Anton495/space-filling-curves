@@ -94,9 +94,6 @@ class FractalCurve:
             dict_bm[bm[k]] = self.alph[k]
             dict_bm[bm[k].swapcase()] = self.alph[k].upper()
             
-            #dict_bm[self.alph[k]] = bm[k]
-            #dict_bm[self.alph[k].upper()] = bm[k].swapcase()
-            
         # Поворачиваем фракцию (применяем словарь)
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
         
