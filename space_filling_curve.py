@@ -87,6 +87,11 @@ class FractalCurve:
     
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
+        # Проверяем наличие обращения по времени в базавом преобразовании
+        if bm[-1] == '1':
+            bm = bm[:-1].swapcase()
+            sub = reversed(sub)
+            
         # Создаем словарь базового преобразования, например kIJ = {k->i,I->j,J->k} 
         # и его инверсию {K->I,i->j,j->K} 
         dict_bm={}
@@ -96,11 +101,6 @@ class FractalCurve:
             
         # Поворачиваем фракцию (применяем словарь)
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
-        
-        # Обращаем по времени
-        if bm[-1] == '1':
-            fraction.reverse()
-            fraction = [k.swapcase() for k in fraction]
         
         return fraction
     
