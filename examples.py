@@ -74,8 +74,7 @@ def get_peano5_curve():
                           'jI1','jI1','IJ','IJ','jI1',
                           'ij','ij','Ji1','jI1','ij',
                           'ij','ij','IJ','Ji1','Ji1',
-                          'ij','IJ','Ji1','Ji1','ij',
-                          ]]
+                          'ij','IJ','Ji1','Ji1','ij']]
     ) 
     
 def get_peano7_curve():
@@ -87,8 +86,7 @@ def get_peano7_curve():
                            'ij','jI1','jI1','IJ','jI1','ij','ij',
                            'Ji1','jI1','ij','ij','Ji1','jI1','ij',
                            'ij','ij','IJ','Ji1','Ji1','ij','IJ',
-                           'Ji1','Ji1','ij','IJ','Ji1','Ji1','ij',
-                           ]]
+                           'Ji1','Ji1','ij','IJ','Ji1','Ji1','ij']]
     )
     
 def get_bauman_curve():
