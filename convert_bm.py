@@ -36,7 +36,8 @@ def convert_bm(base_maps):
             for m in range(dim):
                 new_bm = new_bm + inv_dict_bm[alph[m]]
 
-            new_bm = base_maps[l][k][0] + new_bm
+            if fractal != 1:
+                new_bm = base_maps[l][k][0] + new_bm
 
             if base_maps[l][k][-1] == '~':
                 new_bm = new_bm + '1'
