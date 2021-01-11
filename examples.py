@@ -67,7 +67,7 @@ def get_tokarev_curve():
             base_maps = [['jki','kij','kij','iJK','iJK','KIj','KIj','JkI']]
     ) 
 
-def get_peano5_curve():
+def get_ye_curve():
     return FractalCurve(
             chain_proto = ['jiJijjIIjjiJijiiJIJiJIJi'],
             base_maps = [['jI1','ij','ij','Ji1','jI1',
