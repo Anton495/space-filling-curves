@@ -62,9 +62,8 @@ class FractalCurve:
                     new_bm = ''
                     for m in range(self.dim):
                         new_bm = new_bm + inv_dict_bm[self.alph[m]]
-            
-                    if self.fractal != 1:
-                        new_bm = base_maps[l][k][0] + new_bm
+
+                    new_bm = base_maps[l][k][0] + new_bm
             
                     if base_maps[l][k][-1] == '~':
                         new_bm = new_bm + '~'
