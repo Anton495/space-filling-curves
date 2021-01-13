@@ -5,42 +5,78 @@ import sympy as sp
 
 class FractalCurve:
     
-    def __init__(self,chain_proto,base_maps,
+    def __init__(self,coding_system,chain_proto,base_maps,
                  dim=None,alph=None,genus=None,div=None,fractal=None,vect_dict=None):
         
+        self.coding_system = coding_system
         self.chain_proto = chain_proto
-        self.base_maps = base_maps
         self.dim = dim if dim is not None else self.get_dim()
-        self.alph = alph if alph is not None else self.get_alphabet()
-        self.genus = genus if genus is not None else self.get_genus()
-        self.div = div if div is not None else self.get_div()
+        self.alph = alph if alph is not None else self.get_alphabet()        
         self.fractal = fractal if fractal is not None else self.get_fractal()
+        self.genus = genus if genus is not None else self.get_genus()
+        self.div = div if div is not None else self.get_div()        
+        self.base_maps = self.get_base_maps(base_maps)
         self.vect_dict = vect_dict if vect_dict is not None else self.get_vect_dict()
 
     def get_dim(self):
         '''get the curve dimension'''
         return len(set(''.join(self.chain_proto[0]).lower()))
-
+    
     def get_alphabet(self):
         '''get alphabet for curve prototypes and base maps'''
         return 'ijklmnop'[:self.dim]
 
+    def get_fractal(self):
+        '''get the curve fractality'''
+        return len(self.chain_proto)
+    
     def get_genus(self):
         '''get the curve genus'''
-        return len(self.base_maps[0])
+        return len(self.chain_proto[0])+1    
 
     def get_div(self):
         '''get the curve div'''
         return int(self.genus**(1/self.dim))
 
-    def get_fractal(self):
-        '''get the curve fractality'''
-        fractal = len(self.chain_proto)
-        # Добавляем номер кривой в базовые преобразования для монофракталов
-        if fractal == 1:
-            self.base_maps = [['0' + k for k in self.base_maps[0]]]  
-        return fractal
+    def get_base_maps(self,base_maps):
+        if len(base_maps)==1:
+            base_maps = [['0' + k for k in base_maps[0]]]
+        
+        if self.coding_system == 'ijk->':
+        
+            new_base_maps = []
+            for l in range(self.fractal):
+                
+                new_bms = []
+                for k in range(self.genus):
+            
+                    cut_bm = base_maps[l][k][1:self.dim+1]
 
+                    dict_bm={}
+                    for m in range(self.dim):
+                        dict_bm[self.alph[m]] = cut_bm[m]
+                        dict_bm[self.alph[m].upper()] = cut_bm[m].swapcase()
+            
+                    inv_dict_bm = {str(m1): k1 for k1, m1 in dict_bm.items()}
+
+                    new_bm = ''
+                    for m in range(self.dim):
+                        new_bm = new_bm + inv_dict_bm[self.alph[m]]
+            
+                    if self.fractal != 1:
+                        new_bm = base_maps[l][k][0] + new_bm
+            
+                    if base_maps[l][k][-1] == '~':
+                        new_bm = new_bm + '~'
+    
+                    new_bms.append(new_bm)
+        
+                new_base_maps.append(new_bms)
+              
+            base_maps = new_base_maps
+        
+        return base_maps
+        
     def get_vect_dict(self):
         '''get unit and diagonal vectors dictonary'''
         # Формируем словарь единичных векторов
@@ -88,14 +124,14 @@ class FractalCurve:
     def get_fraction(self,sub,bm):
         '''apply base map and reverse to some curve fraction'''
         # Проверяем наличие обращения по времени в базавом преобразовании
-        if bm[-1] == '1':
+        if bm[-1] == '~':
             # Меняем напраления векторов
             bm = bm[:-1].swapcase()
             # Проходим вектора в обратном порядке
             sub = reversed(sub)
             
         # Создаем словарь базового преобразования, например kIJ = {k->i,I->j,J->k} 
-        # и его инверсию {K->I,i->j,j->K} 
+        # и его инверсию {K->I,i->j,j->K}
         dict_bm={}
         for k in range(self.dim):
             dict_bm[bm[k]] = self.alph[k]
@@ -180,8 +216,8 @@ class FractalCurve:
             else:
                 bm2 = bm2 + junction[1][m]
                 
-        if junction[0][-1] == '1': id_bm = id_bm + '1'
-        if junction[1][-1] == '1': bm2 = bm2 + '1'
+        if junction[0][-1] == '~': id_bm = id_bm + '~'
+        if junction[1][-1] == '~': bm2 = bm2 + '~'
             
         bm1 = junction[0][0] + id_bm
         bm2 = junction[1][0] + bm2
@@ -201,7 +237,7 @@ class FractalCurve:
             else:
                 new_bm = new_bm + bm[m].upper() if bm2[k] == bm2[k].upper() else new_bm + bm[m].lower() 
         
-        if bm[-1] == '1': new_bm = new_bm + '1'
+        if bm[-1] == '~': new_bm = new_bm + '~'
             
         new_bm = bm[0] + new_bm
         
@@ -219,13 +255,13 @@ class FractalCurve:
                 bms = [base[index][0],base[index][-1]]
         
                 for m in range(2):
-                    if self.base_maps[r][k][-1] == '1':
-                        if bms[m][-1] == '1':
+                    if self.base_maps[r][k][-1] == '~':
+                        if bms[m][-1] == '~':
                             bms[m] = bms[m][:-1]
                         else:
-                            bms[m] = bms[m] + '1'
+                            bms[m] = bms[m] + '~'
         
-                if self.base_maps[r][k][-1] == '1':
+                if self.base_maps[r][k][-1] == '~':
                     new_subbase = new_subbase + list(reversed(bms))
                 else:
                     new_subbase = new_subbase + bms
@@ -265,7 +301,7 @@ class FractalCurve:
 
     def get_time_norm(self,jun0):
         '''Функция выполняет нормировку стыков с обращением по времени'''
-        if jun0[0][-1]=='1' and jun0[1][-1]=='1':
+        if jun0[0][-1]=='~' and jun0[1][-1]=='~':
             
             jun1 = list(reversed(jun0))
             jun2 = [jun1[0][:-1],jun1[1][:-1]]
@@ -276,21 +312,21 @@ class FractalCurve:
         
         elif int(jun0[0][0]) > int(jun0[1][0]):
             
-            if jun0[0][-1]=='1' and jun0[1][-1]!='1':
+            if jun0[0][-1]=='~' and jun0[1][-1]!='~':
                 
                 jun1 = list(reversed(jun0))
                 jun2 = [jun1[0],jun1[1][:-1]]
-                jun3 = [jun2[0]+'1',jun2[1]]
+                jun3 = [jun2[0]+'~',jun2[1]]
                 
                 new_jun = self.get_con_junction(jun3)
                 
                 return new_jun
                 
-            elif jun0[0][-1]!='1' and jun0[1][-1]=='1':
+            elif jun0[0][-1]!='~' and jun0[1][-1]=='~':
                 
                 jun1 = list(reversed(jun0))
                 jun2 = [jun1[0][:-1],jun1[1]]
-                jun3 = [jun2[0],jun2[1]+'1']
+                jun3 = [jun2[0],jun2[1]+'~']
                 
                 new_jun = self.get_con_junction(jun3)
                 
@@ -348,10 +384,10 @@ class FractalCurve:
                 #Последовательно сдвигаем и масштабируем каждую вершину прототипа          
                 norm_coord = tuple([all_vertices[l][k][m]*self.div/(self.div-1) + 
                                     shift_coord[m] for m in range(self.dim)])
-                #Находим номер вершины во фракции, которая сототвествует вершине прототипа 
+                #Находим номер вершины во фракции, которая сототвествует вершине прототипа
                 i = sub_1_coord[l].index(norm_coord)-fractions_numb[k+l*2**self.dim]*(2**self.dim-1)
                 #Проверяем есть ли обращение по времени
-                if self.base_maps[l][k][-1]=='1':
+                if self.base_maps[l][k][-1]=='~':
                     i = 2**self.dim-1 - i
                     reverse_time[k+l*2**self.dim] = 1
                 #Определяем к какой кривой принадлежит этот момент
