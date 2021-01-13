@@ -89,7 +89,9 @@ class FractalCurve:
         '''apply base map and reverse to some curve fraction'''
         # Проверяем наличие обращения по времени в базавом преобразовании
         if bm[-1] == '1':
+            # Меняем напраления векторов
             bm = bm[:-1].swapcase()
+            # Проходим вектора в обратном порядке
             sub = reversed(sub)
             
         # Создаем словарь базового преобразования, например kIJ = {k->i,I->j,J->k} 
@@ -192,12 +194,12 @@ class FractalCurve:
         '''Возвращает базовое преобразование базового преобразования. Например bm2(bm) = KiJ(jkI)'''
         new_bm = ''
         id_bm = 'n' + self.alph
-        for l in range(1,self.dim+1):
-            m = id_bm.index(bm2[l].lower())   
+        for k in range(1,self.dim+1):
+            m = id_bm.index(bm2[k].lower())   
             if bm[m]  == bm[m].upper():
-                new_bm = new_bm + bm[m].upper() if bm2[l] == bm2[l].lower() else new_bm + bm[m].lower()
+                new_bm = new_bm + bm[m].upper() if bm2[k] == bm2[k].lower() else new_bm + bm[m].lower()
             else:
-                new_bm = new_bm + bm[m].upper() if bm2[l] == bm2[l].upper() else new_bm + bm[m].lower() 
+                new_bm = new_bm + bm[m].upper() if bm2[k] == bm2[k].upper() else new_bm + bm[m].lower() 
         
         if bm[-1] == '1': new_bm = new_bm + '1'
             
