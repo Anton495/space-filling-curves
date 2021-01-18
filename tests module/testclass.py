@@ -5,7 +5,7 @@ class TestClass:
     check_junction(bm1,bm2) - определяет хороший или плохой стык
     '''
     
-    def __init__(self,coding_system,chain_proto,div,
+    def __init__(self,coding_system,chain_proto,
                  cut_chain_proto=None,dim=None,alph=None,fractal=None,genus=None):
         
         '''
@@ -16,7 +16,6 @@ class TestClass:
         
         self.coding_system = coding_system
         self.chain_proto = chain_proto
-        self.div = div
         self.cut_chain_proto = self.cut_chain_proto()        
         self.dim = dim if dim is not None else self.get_dim()
         self.alph = alph if alph is not None else self.get_alph()
@@ -123,13 +122,11 @@ class TestClass:
 
 #chain_proto = ['jiJ']
 #base_maps = [['0ji','0ij','0ij','0JI']]
-#div = 2
 
 #example 2
 
 chain_proto = ['jjiJJijj']
 base_maps = [['0ij','0Ij','0ij','0iJ','0IJ','0iJ','0ij','0Ij','0ij']]
-div = 3
 
-Test = TestClass('->ijk',chain_proto,div)
+Test = TestClass('->ijk',chain_proto)
 print(Test.check_base_maps(base_maps))
