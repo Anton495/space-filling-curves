@@ -59,7 +59,7 @@ class TestClass:
         for m in range(self.dim):
             new_bm = new_bm + inv_dict_bm[self.alph[m]]
         
-        #Добавляем номер прототипа
+        #Добавляем номер кривой
         new_bm = bm[0] + new_bm
         
         #Учитываем обращение по времени
