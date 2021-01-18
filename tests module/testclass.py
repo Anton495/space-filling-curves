@@ -1,9 +1,9 @@
 class TestClass:
     
-    '''Основные функции класса:
-        check_junction(bm1,bm2) - определяет хороший или плохой стык
-        
-        '''
+    '''
+    Основные функции класса:
+    check_junction(bm1,bm2) - определяет хороший или плохой стык
+    '''
     
     def __init__(self,coding_system,chain_proto,div,
                  cut_chain_proto=None,dim=None,alph=None,fractal=None,genus=None):
