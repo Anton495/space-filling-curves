@@ -2,10 +2,11 @@ import itertools as it
 
 class TestClass:
     
-    '''Основные функции класса:
-        check_junction(bm1,bm2) - определяет хороший или плохой стык
-        
-        '''
+    '''
+    Основные функции класса:
+    check_junction(bm1,bm2) - проверяет хороший или плохой стык (для частично заданной кривой)
+    check_all_junctions(base_maps) - проверяет все стыки (для полностью заданной кривой)
+    '''
     
     def __init__(self,chain_proto,coding_system,base_maps=None,
                  cut_chain_proto=None,div=None,dim=None,alph=None,
