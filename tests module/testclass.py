@@ -4,8 +4,8 @@ class TestClass:
     
     '''
     Основные функции класса:
-    check_junction(bm1,bm2) - проверяет хороший или плохой стык (для частично заданной кривой)
-    check_all_junctions(base_maps) - проверяет все стыки (для полностью заданной кривой)
+    check_junction(bm1,bm2) - проверяет хороший или плохой стык (для частично заданной кривой), bm1 = '0jIk~'
+    check_all_junctions(base_maps) - проверяет все стыки (для полностью заданной кривой), base_maps = [[bm1,bm2,...]]
     '''
     
     def __init__(self,chain_proto,coding_system,base_maps=None,
