@@ -75,6 +75,13 @@ def get_tokarev_curve():
             base_maps = [['jki','kij','kij','iJK','iJK','KIj','KIj','JkI']]
     ) 
 
+def get_bauman_curve():
+    return FractalCurve(
+            coding_system = '->ijk',
+            chain_proto = ['ijIjiiJJ'],
+            base_maps = [['ij','ji','jI~','iJ~','ij','ij','Ij~','Ji~','Ji~']]
+    )
+
 def get_ye_curve():
     return FractalCurve(
             coding_system = '->ijk',
@@ -85,13 +92,18 @@ def get_ye_curve():
                           'ij' ,'ij' ,'IJ' ,'Ji~','Ji~',
                           'ij' ,'IJ' ,'Ji~','Ji~','ij']]
     )
-    
-def get_bauman_curve():
+
+def get_test_curve():
     return FractalCurve(
             coding_system = '->ijk',
-            chain_proto = ['ijIjiiJJ'],
-            base_maps = [['ij','ji','jI~','iJ~','ij','ij','Ij~','Ji~','Ji~']]
-    )
+            chain_proto = ['jiJijiJijjIjijIIJJIIjijIjjiJijiJijiiJIJiJIJiJIJi'],
+            base_maps = [['jI~','ij','ij','Ji~','jI~','ij','ij',
+                           'Ji~','jI~','jI~','jI~','IJ','ij','jI~',
+                           'jI~','IJ','Ji~','Ji~','IJ','IJ','IJ',
+                           'ij','jI~','jI~','IJ','jI~','ij','ij',
+                           'Ji~','jI~','ij','ij','Ji~','jI~','ij',
+                           'ij','ij','IJ','Ji~','Ji~','ij','IJ',
+                           'Ji~','Ji~','ij','IJ','Ji~','Ji~','ij']]
 
 def get_haverkort_curve_1():
     return FractalCurve(
