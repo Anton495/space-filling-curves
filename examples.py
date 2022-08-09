@@ -139,7 +139,7 @@ def get_luna_curve():
 
 #3d curve examples (bi-fractal, new curves)
 
-def get_17_curve():
+def get_spring_curve():
     return FractalCurve(
             coding_system = 'ijk->',
             chain_proto = ['jikIJiK','jkJijKJ'],
