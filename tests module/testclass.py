@@ -1,5 +1,11 @@
 import itertools as it
+import sympy as sp
+from functools import reduce
+from math import gcd
+from numba import njit, float64, int32, prange, int8, boolean, typeof
+import numpy as np
 import time
+
 
 class TestClass:
     
@@ -130,36 +136,6 @@ class TestClass:
         fraction = [''.join(list(map(dict_bm.get, k))) for k in sub]
         
         return fraction
-
-    def is_junction_bad(self,bm1,bm2):
-        '''check good or bad junction'''
-        if self.coding_system == 'ijk->':
-            bm1 = self.get_vector_code(bm1)
-            bm2 = self.get_vector_code(bm2)
-        
-        # Применяем бозовое преобразование к cut_chain_proto, где каждый из прототипов
-        # состоит из первого и последненго векторов (этого достаточно)
-        first_fraction  = self.get_fraction(self.cut_chain_proto[int(bm1[0])],bm1[1:])
-        second_fraction = self.get_fraction(self.cut_chain_proto[int(bm2[0])],bm2[1:])
-        
-        if first_fraction[-1] == second_fraction[0]:
-            return True
-        else:
-            return False
-        
-    def is_junction_perfect(self,bm1,bm2):
-        '''check good or bad junction'''
-        if self.coding_system == 'ijk->':
-            bm1 = self.get_vector_code(bm1)
-            bm2 = self.get_vector_code(bm2)
-        
-        first_fraction  = self.get_fraction(self.cut_chain_proto[int(bm1[0])],bm1[1:])
-        second_fraction = self.get_fraction(self.cut_chain_proto[int(bm2[0])],bm2[1:])
-        
-        if first_fraction[-1] == second_fraction[0].swapcase():
-            return True
-        else:
-            return False
     
 # Находим все стыки в векторной форме
 
@@ -196,6 +172,9 @@ class TestClass:
                 new_bm = new_bm + bm[m].upper() if bm2[k] == bm2[k].upper() else new_bm + bm[m].lower() 
         
         if bm[-1] == '~': new_bm = new_bm + '~'
+        
+        #if bm[-1] == '~' or bm2[-1] == '~':
+        #    new_bm = new_bm + '~'
             
         new_bm = bm[0] + new_bm
         
@@ -228,6 +207,24 @@ class TestClass:
         
         return new_base
 
+    def get_time_norm(self,jun):
+        '''Функция выполняет нормировку стыков с обращением по времени'''
+        if jun[0][-1]=='~' and jun[1][-1]=='~':
+            
+            jun = [jun[1][:-1],jun[0][:-1]]
+        
+        elif int(jun[0][0]) > int(jun[1][0]):
+            
+            if jun[0][-1]=='~' and jun[1][-1]!='~':
+                
+                jun = [jun[1]+'~',jun[0][:-1]]
+                
+            elif jun[0][-1]!='~' and jun[1][-1]=='~':
+                
+                jun = [jun[1][:-1],jun[0]+'~']
+            
+        return self.get_con_junction(jun)
+
     def get_jun(self,n):
         '''Функция находит все стыки на n-ом подразделении'''
         base = self.base_maps
@@ -253,44 +250,9 @@ class TestClass:
             for k in range(self.genus-1):
                 jun = jun + [[first[r][k][-1],second[r][k][-1]]]
 
-        jun = set([self.get_con_junction(k) for k in jun])
+        jun = set([self.get_time_norm(k) for k in jun])
 
         return jun
-
-    def get_time_norm(self,jun0):
-        '''Функция выполняет нормировку стыков с обращением по времени'''
-        if jun0[0][-1]=='~' and jun0[1][-1]=='~':
-            
-            jun1 = list(reversed(jun0))
-            jun2 = [jun1[0][:-1],jun1[1][:-1]]
-            
-            new_jun = self.get_con_junction(jun2)
-            
-            return new_jun
-        
-        elif int(jun0[0][0]) > int(jun0[1][0]):
-            
-            if jun0[0][-1]=='~' and jun0[1][-1]!='~':
-                
-                jun1 = list(reversed(jun0))
-                jun2 = [jun1[0],jun1[1][:-1]]
-                jun3 = [jun2[0]+'~',jun2[1]]
-                
-                new_jun = self.get_con_junction(jun3)
-                
-                return new_jun
-                
-            elif jun0[0][-1]!='~' and jun0[1][-1]=='~':
-                
-                jun1 = list(reversed(jun0))
-                jun2 = [jun1[0][:-1],jun1[1]]
-                jun3 = [jun2[0],jun2[1]+'~']
-                
-                new_jun = self.get_con_junction(jun3)
-                
-                return new_jun
-            
-        return jun0
 
     def get_junctions(self):
         '''Функция находит все стыки кривой'''
@@ -299,11 +261,8 @@ class TestClass:
         all_junctions_sub_1 = [[self.base_maps[r][k],self.base_maps[r][k+1]] 
                                 for k in range(self.genus-1) for r in range(self.fractal)]
         
-        # Приводим стыки на первом подразделении к каноническому виду
-        junctions = set([self.get_con_junction(k) for k in all_junctions_sub_1])
-        # Нормализуем стыки
-        junctions = set([self.get_time_norm(k) for k in junctions])
-
+        #Нормализуем и приводим стыки к каноническому виду
+        junctions = set([self.get_time_norm(k) for k in all_junctions_sub_1])
         
         for k in range(2,20):
             jun = self.get_jun(k)
@@ -311,16 +270,31 @@ class TestClass:
             N = len(junctions)
             junctions = junctions.union(jun)
             
-            # Нормализуем стыки
-            junctions = set([self.get_time_norm(k) for k in junctions])
-            
             if N == len(junctions):
                 break
             
         #print('глубина кривой -',k-1)
             
         return sorted(junctions)
-
+    
+    # Провека на плохие и совершенные стыки
+    
+    def is_junction_bad(self,bm1,bm2):
+        '''check good or bad junction'''
+        if self.coding_system == 'ijk->':
+            bm1 = self.get_vector_code(bm1)
+            bm2 = self.get_vector_code(bm2)
+        
+        # Применяем бозовое преобразование к cut_chain_proto, где каждый из прототипов
+        # состоит из первого и последненго векторов (этого достаточно)
+        first_fraction  = self.get_fraction(self.cut_chain_proto[int(bm1[0])],bm1[1:])
+        second_fraction = self.get_fraction(self.cut_chain_proto[int(bm2[0])],bm2[1:])
+        
+        if first_fraction[-1] == second_fraction[0]:
+            return True
+        else:
+            return False
+    
     def is_junctions_good(self,base_maps):
         '''Проверяет все стыки кривой'''
         if self.coding_system == 'ijk->':
@@ -334,7 +308,36 @@ class TestClass:
             if self.is_junction_bad(m[0],m[1]) == True:
                 return False
             
-        return True
+        return True        
+    
+    def is_junction_perfect(self,bm1,bm2):
+        '''check perfect junction'''
+        if self.coding_system == 'ijk->':
+            bm1 = self.get_vector_code(bm1)
+            bm2 = self.get_vector_code(bm2)
+        
+        first_fraction  = self.get_fraction(self.cut_chain_proto[int(bm1[0])],bm1[1:])
+        second_fraction = self.get_fraction(self.cut_chain_proto[int(bm2[0])],bm2[1:])
+        
+        if first_fraction[-1] == second_fraction[0].swapcase():
+            return True
+        else:
+            return False
+
+    def is_junctions_perfect(self,base_maps):
+        '''Проверяет все стыки кривой'''
+        if self.coding_system == 'ijk->':
+            base_maps = self.get_vector_codes(base_maps)
+        
+        self.base_maps = base_maps
+
+        junctions = self.get_junctions()
+    
+        for m in junctions:
+            if self.is_junction_perfect(m[0],m[1]) == False:
+                return False,None,None
+            
+        return True,junctions,self.get_vertex_moments()
 
 # Находим переходные ломанные, группы вращеиний и хорошие кривые
 
@@ -382,6 +385,98 @@ class TestClass:
         
         return curve_coord
 
+    def get_subdiv(self,sub_numb,plot=True):
+        '''get n-th curve subdivision'''
+        # Определяем нулевое подразделение кривой
+        sub_k = self.chain_proto if plot==True else self.get_vertex_chain_proto()
+        
+        for n in range(sub_numb):
+
+            # Формируем список преобразованных фракций
+            sub_n = [[self.get_fraction(sub_k[int(self.base_maps[k][m][0])],self.base_maps[k][m][1:]) 
+                      for m in range(self.genus)] for k in range(self.fractal)]
+            
+            # Добавляем связующие ребра между фракциями для графика
+            if plot==True:    
+                [[sub_n[k].insert(2*m+1,[self.chain_proto[k][m]])
+                  for m in range(self.genus-1)] for k in range(self.fractal)]
+            
+            # Объединяем все фракции в одну фракцию
+            sub_n = [sum(k,[]) for k in sub_n]
+            
+            # Определяем (n-1)-ое подразделение как n-ое подразделение
+            sub_k = sub_n.copy()
+        
+        return sub_k
+
+    def get_vertex_moments(self):
+        '''Функция находит вершинные моменты'''
+        proto = self.get_proto()
+        all_vertices = self.get_all_vertices()
+        
+        # Находим номера фракций, которые содержат вершины прототипа
+        fractions_numb = []
+        for l in range(self.fractal):
+            for k in range(2**self.dim):
+                fractions_numb.append(proto[l].index(all_vertices[l][k]))
+                
+        # Находим номера вершин в подфракциях, попадающих в вершины прототипа
+        sub_1 = self.get_subdiv(1,plot=False)
+        sub_1_coord = [self.get_curve_coord(k) for k in sub_1]
+        subfractions_numb = []
+        reverse_time = sp.zeros(1,2**self.dim*self.fractal)
+        for l in range(self.fractal):
+            #Находим сдвиг по всем координатам (для реберных и граневых кривых)
+            shift_coord = [min([row[k] for row in sub_1_coord[l]]) for k in range(self.dim)]
+            for k in range(2**self.dim):
+                #Последовательно сдвигаем и масштабируем каждую вершину прототипа          
+                norm_coord = tuple([all_vertices[l][k][m]*self.div/(self.div-1) + 
+                                    shift_coord[m] for m in range(self.dim)])
+                #Находим номер вершины во фракции, которая сототвествует вершине прототипа
+                i = sub_1_coord[l].index(norm_coord)-fractions_numb[k+l*2**self.dim]*(2**self.dim-1)
+                #Проверяем есть ли обращение по времени
+                if self.base_maps[l][k][-1]=='~':
+                    i = 2**self.dim-1 - i
+                    reverse_time[k+l*2**self.dim] = 1
+                #Определяем к какой кривой принадлежит этот момент
+                m = int(self.base_maps[l][k][0])*(2**self.dim)    
+                subfractions_numb.append(i+m)
+
+        all_vertex_moments = []
+        A = sp.eye(2**self.dim*self.fractal)
+        B = sp.zeros(1,2**self.dim*self.fractal)
+        for k in range(2**self.dim*self.fractal):
+            if reverse_time[k] == 1:
+                A[k,subfractions_numb[k]] += sp.Rational(1,self.genus)
+                B[k] = sp.Rational(1+fractions_numb[k],self.genus)
+            else:    
+                A[k,subfractions_numb[k]] -= sp.Rational(1,self.genus)
+                B[k] = sp.Rational(fractions_numb[k],self.genus)
+        all_vertex_moments = A.inv()*B.T #.dot(B)
+        
+        def lcm(a, b):
+            return int(a * b / gcd(a, b))
+
+        def lcms(*numbers):
+            return reduce(lcm, numbers)
+
+        # Находим знаменатели всех моментов
+        all_den = [all_vertex_moments[k].q for k in range(2**self.dim*self.fractal)]
+
+        # Находим общий знаменатель для всех моментов
+        common_den = lcms(*all_den)
+
+        # Приводим моменты к целым числам  
+        all_vertex_moments = [int(all_vertex_moments[k]*common_den) for k in range(2**self.dim*self.fractal)]
+
+        vertex_moments = []
+        for l in range(self.fractal):
+            vertex_moments.append(all_vertex_moments[l*2**self.dim:(l+1)*2**self.dim])
+
+        vertex_moments.append(common_den)
+        
+        return vertex_moments
+    
     def get_all_vertices(self):
         '''Функция находит координаты вершин прототипов, в порядке их прохождения'''
         proto = self.get_proto()
@@ -454,78 +549,135 @@ class TestClass:
 
         return grid,type_grid
 
+    def get_shift_one_side(self):
+        '''Находим сдвиги координат для односторонних кривых'''
+        one_side = self.alph + self.alph.upper()
+        one_side = [k for k in one_side]
+        
+        return one_side
+    
+    def get_shift_diag(self):
+        '''Находим сдвиги координат для диагональных кривых'''
+        all_letters = [[self.alph[k],self.alph[k].upper()] for k in range(self.dim)]
+        all_comb_let = list(it.combinations(all_letters,self.dim))
+        diag = list(map(''.join, it.chain(*[it.product(*k) for k in all_comb_let])))
+        
+        return diag
+
     def get_tran_broken(self,grid,type_grid,start=None,end=None):
         '''get transitional broken line on the grid''' #Пока только одна ломанная
+        #Находим начальную координату
         if start == None:
-            start_coord = tuple([0]*self.dim) 
-
-        if type_grid == 'one_side':
-            step = ['i','j','I','J'] 
-            if end == None:
+            start_coord = tuple([0]*self.dim)
+        
+        #Находим конечную координату
+        if end == None:
+            if type_grid == 'one_side':
                 end_coord = tuple([self.div]+[0]*(self.dim-1))
-
+            elif type_grid == 'diag':
+                end_coord = tuple([self.div]*self.dim)        
+        
+        #Находим сдвиги координат
+        if self.fractal==2:
+            step = self.get_shift_one_side() + self.get_shift_diag() 
+                
+        elif type_grid == 'one_side':
+            step = self.get_shift_one_side()
+            
         elif type_grid == 'diag':
-            step = ['ij','iJ','Ij','IJ']
-            if end == None:
-                end_coord = tuple([self.div]*self.dim)
-    
-        tran_broken = [start_coord]
-        for k in range(self.genus-1):
-    
-            start = tran_broken[k]
+            step = self.get_shift_diag() 
+        
+        current_branchs = [[start_coord]]
+        vect_current_branchs = [[]]
+        #Проходим все координаты
+        for l in range(self.genus-1):
+
+            new_branchs = []
+            vect_new_branchs = []
+            #Проходим все ветви
+            for k in range(len(current_branchs)):
+                
+                Start = current_branchs[k][-1]
+                for m in range(len(step)):
+                    
+                    End = self.vect_dict[step[m]]
+                    current_coord = self.sum_coord(Start,End)
+                    
+                    if current_coord in grid[l]:
+                        if current_coord in grid[l+1]:
+        
+                            new_branchs.append(current_branchs[k]+[current_coord])
+                            vect_new_branchs.append(vect_current_branchs[k]+[step[m]])
+                        
+            current_branchs = new_branchs  
+            vect_current_branchs = vect_new_branchs
+            
+        new_branchs = []
+        vect_new_branchs = []
+        for k in range(len(current_branchs)):
+            
+            Start = current_branchs[k][-1]
             for m in range(len(step)):
+                
+                End = self.vect_dict[step[m]]
+                current_coord = self.sum_coord(Start,End)
+                
+                if current_coord == end_coord:
+                    
+                    new_branchs.append(current_branchs[k]+[end_coord])
+                    vect_new_branchs.append(vect_current_branchs[k]+[step[m]])
         
-                end = self.vect_dict[step[m]]
-                current_coord = self.sum_coord(start,end)
+        tran_broken = new_branchs
+        vect_tran_broken = vect_new_branchs
         
-                if current_coord in grid[k]:
-                    if current_coord in grid[k+1]:
-                        tran_broken.append(current_coord)
-                        break
+        return tran_broken,vect_tran_broken
 
-        tran_broken.append(end_coord)
-        
-        return tran_broken
-
-    def get_rotation_groups(self,proto,bms=None):
-        
-        grid,type_grid = self.get_grid(proto)    
-   
-        tran_broken = self.get_tran_broken(grid,type_grid)
-        
-        vertex_chain_proto = self.get_vertex_chain_proto()
-        
-        if bms==None:
-            bms = self.get_bms_fraction()
-
-        groups = []
-        for m in range(self.genus):
-    
-            group = []
-            for k in range(len(bms)):
-            
-                bm_fraction = self.get_fraction(vertex_chain_proto[int(bms[k][0])],bms[k][1:])
-                coord_frac = self.get_curve_coord(bm_fraction,tran_broken[m])
-                if coord_frac[-1] == tran_broken[m+1]:
-                    if set(coord_frac) == grid[m]:
-                        group.append(bms[k])
-        
-            groups.append(tuple(group))
-            
-        return groups
-        
     def get_bms_fraction(self,rev=True):
         '''get list base maps with reversed'''
         all_letters = [[self.alph[k],self.alph[k].upper()] for k in range(self.dim)]
         all_comb_let = list(it.permutations(all_letters,self.dim))
         bms = list(map(''.join, it.chain(*[it.product(*k) for k in all_comb_let])))
         
-        bms = ['0'+k for k in bms]
-        
         if rev == True:    
             bms = bms + [k+'~' for k in bms]
         
         return bms
+
+    def get_rotation_groups(self,proto,rev=False,bms=None):
+        
+        grid,type_grid = self.get_grid(proto)    
+   
+        tran_broken,vect_tran_broken = self.get_tran_broken(grid,type_grid)
+        
+        vertex_chain_proto = self.get_vertex_chain_proto()
+        
+        if bms==None:
+            bms = self.get_bms_fraction(rev)
+        
+        all_groups = []
+        for l in range(len(tran_broken)):
+        
+            groups = []
+            for m in range(self.genus):
+                
+                #Проверяем является кривая односторонней или диагональной
+                n = '0' if len(vect_tran_broken[l][m])==1 else '1'
+                
+                group = []
+                for k in range(len(bms)):
+                    
+                    bm_fraction = self.get_fraction(vertex_chain_proto[int(n)],bms[k])
+                    coord_frac = self.get_curve_coord(bm_fraction,tran_broken[l][m])
+                    if coord_frac[-1] == tran_broken[l][m+1]:
+                        if set(coord_frac) == grid[m]:
+                            
+                            group.append(n + bms[k])
+        
+                groups.append(tuple(group))
+            
+            all_groups.append(groups)
+            
+        return all_groups
     
     def get_base_maps(self,bms):
         
@@ -542,6 +694,25 @@ class TestClass:
             base_maps = [self.get_vector_code(k) for k in base_maps]
         
         return base_maps
+        
+    def gef_perfect_curve(self,groups):
+                
+        current_branchs = [[j] for j in groups[0]]
+
+        for l in range(1,self.genus):
+    
+            new_branchs = []
+            for k in range(len(current_branchs)):
+    
+                for m in range(len(groups[l])):
+        
+                    if self.is_junction_perfect(current_branchs[k][-1],groups[l][m]) == True:
+                        
+                        new_branchs.append(current_branchs[k]+[groups[l][m]])
+        
+            current_branchs = new_branchs
+
+        return current_branchs      
         
     def get_good_curve(self):
         ''''get base maps for good curve'''
@@ -560,6 +731,7 @@ class TestClass:
                 for m in range(len(groups[l])):
         
                     if self.is_junction_bad(current_branchs[k][-1],groups[l][m]) == False:
+                        
                         new_branchs.append(current_branchs[k]+[groups[l][m]])
         
             current_branchs = new_branchs
@@ -582,3 +754,549 @@ class TestClass:
         print('время перебора -', elapsed)
         
         return current_branchs
+    
+
+def get_moment_sub_k(moments,n):
+    
+    den = moments[-1]
+    moment_sub_k = [np.array(moments[k]) for k in range(self.fractal)]
+
+    for n in range(n):
+
+        last_moments = []
+
+        for r in range(self.fractal):
+            current_moment = []
+    
+            for k in range(self.genus):
+        
+                new_moment = moment_sub_k[int(self.base_maps[r][k][0])]
+        
+                if self.base_maps[r][k][-1]=='~':
+                    new_moment = np.flip(den*self.genus**n - new_moment)
+        
+                norm_moment = new_moment + k*den*self.genus**n
+                current_moment = np.concatenate((current_moment, norm_moment))
+            
+            last_moments.append(current_moment)
+    
+        moment_sub_k = last_moments
+        
+    moment_sub_k.append(den)
+        
+    return [int32(k) for k in moment_sub_k]
+
+
+
+def get_junction_ratio(junction,moments,n):
+       
+    bm1,bm2 = junction
+    
+    # Генерируем моменты n-ого подразделения 
+    moment_sub_k = get_moment_sub_k(moments,n)
+    
+    first_moments = moment_sub_k[int(bm1[0])]
+    second_moments = moment_sub_k[int(bm2[0])]
+    
+    if bm1[-1] == '~':
+        first_moments = np.flip(moment_sub_k[-1]*self.genus**n - first_moments)
+        
+    if bm2[-1] == '~':
+        second_moments = np.flip(moment_sub_k[-1]*self.genus**n - second_moments)
+    
+    d = np.arange(0, 2**self.dim*self.genus**(n), 2**self.dim)
+    d = np.flip(d)
+        
+    first_moments = np.delete(first_moments, d, 0)
+    second_moments = np.delete(second_moments, d, 0)
+    
+    if n != 0:    
+        second_moments = moment_sub_k[-1]*self.genus**n + second_moments
+    else:
+        second_moments = moment_sub_k[-1] + second_moments
+
+    #print(first_moments)    
+
+    # Генерируем n-ое подразделение кривой
+    sub = self.get_subdiv(n,plot=False)
+
+    frac_1 = self.get_fraction(sub[int(bm1[0])],bm1[1:])
+    coord_1 = self.get_curve_coord(frac_1)
+    
+    frac_2 = self.get_fraction(sub[int(bm2[0])],bm2[1:])
+    coord_2 = self.get_curve_coord(frac_2,start=coord_1[-1])
+    
+    coord_1.pop(0)
+    coord_2.pop(0)
+    
+    coord_1 = np.array(coord_1)
+    coord_2 = np.array(coord_2)
+    
+    x1 = coord_1
+    x2 = coord_2
+
+    t1 = first_moments
+    t2 = second_moments
+    
+    r = get_ratio_l1_3d(x1,x2,t1,t2)
+        
+    return moment_sub_k[-1]*r
+
+
+
+def get_matrix_base_maps():
+    
+    d = { 'i':1, 'I':-1, 'j':2, 'J':-2, 'k':3, 'K':-3, '0':0, '1':1 }
+
+    matrix_base_maps = np.zeros((self.fractal,self.genus,self.dim+2),dtype=np.int8)
+    for l in range(self.fractal):
+        for k in range(self.genus):
+            for m in range(self.dim+1):
+                matrix_base_maps[l][k][m] = d[self.base_maps[l][k][m]]
+
+    for l in range(self.fractal):
+        for k in range(self.genus):
+            if self.base_maps[l][k] == '~':
+                matrix_base_maps[l][k][-1] = 1
+            else:
+                matrix_base_maps[l][k][-1] = 0
+    
+    return matrix_base_maps
+
+def get_all_matrix_base_maps(base_maps):
+    
+    d = { 'i':1, 'I':-1, 'j':2, 'J':-2, 'k':3, 'K':-3, '0':0, '1':1 }
+
+    all_matrix_base_maps = np.zeros((len(base_maps),self.genus,self.dim+2),dtype=np.int8)
+    for l in range(len(base_maps)):
+        for k in range(self.genus):
+            for m in range(self.dim+1):
+                all_matrix_base_maps[l][k][m] = d[base_maps[l][k][m]]
+
+    for l in range(len(base_maps)):
+        for k in range(self.genus):
+            if base_maps[l][k] == '~':
+                all_matrix_base_maps[l][k][-1] = 1
+            else:
+                all_matrix_base_maps[l][k][-1] = 0
+    
+    return all_matrix_base_maps
+
+
+
+
+dim = 3
+fractal = 2
+genus = 8
+
+
+@njit(int8[:,:](int8[:,:]),cache=True)
+def get_con_junction_new(jun):
+    
+    bm2 = np.zeros(dim+2,dtype=np.int8)
+    id_bm = np.array([9,1,2,3,0],dtype=np.int8)
+    
+    for l in range(1,dim+1):
+        m = np.where(np.abs(jun[0][1:dim+1]) == id_bm[l])[0][0]+1
+
+        if jun[0][m] == -abs(jun[0][m]):
+            bm2[l] = -1*jun[1][m]
+        else:
+            bm2[l] = jun[1][m]
+    
+    if jun[0][-1] == 1: id_bm[-1] = 1
+    if jun[1][-1] == 1: bm2[-1] = 1
+            
+    id_bm[0] = jun[0][0]
+    bm2[0] = jun[1][0]
+    
+    jun[0] = id_bm
+    jun[1] = bm2
+    
+    return jun
+
+@njit(int8[:,:](int8[:,:]),cache=True)
+def get_time_norm_new(jun):
+    #Функция выполняет нормировку стыков с обращением по времени
+    if jun[0][-1]==1 and jun[1][-1]==1:
+        
+        new_jun = np.zeros((2,dim+2),dtype=np.int8)
+        
+        new_jun[0] = jun[1]
+        new_jun[1] = jun[0]
+        
+        new_jun[0][-1] = 0
+        new_jun[1][-1] = 0
+        
+        jun = new_jun
+        
+    elif jun[0][0] > jun[1][0]:
+            
+        if jun[0][-1]==1 and jun[1][-1]==0:
+            
+            new_jun = np.zeros((2,dim+2),dtype=np.int8)
+            
+            new_jun[0] = jun[1]
+            new_jun[1] = jun[0]
+            
+            new_jun[0][-1] = 1
+            new_jun[1][-1] = 0
+        
+            jun = new_jun
+                
+        elif jun[0][-1]==0 and jun[1][-1]==1:
+            
+            new_jun = np.zeros((2,dim+2),dtype=np.int8)
+                
+            new_jun[0] = jun[1]
+            new_jun[1] = jun[0]
+            
+            new_jun[0][-1] = 0
+            new_jun[1][-1] = 1
+        
+            jun = new_jun
+            
+    return get_con_junction_new(jun)
+
+@njit(int8[:](int8[:],int8[:]),cache=True)
+def get_bm_bm_new(bm2,bm):
+
+    new_bm = np.zeros(dim+2,dtype=np.int8)
+    id_bm = np.array([9,1,2,3],dtype=np.int8)
+    for k in range(1,dim+1):
+        m = np.where(id_bm == abs(bm2[k]))[0][0]
+        if bm[m]  == -abs(bm[m]):
+            new_bm[k] = -abs(bm[m]) if bm2[k] == abs(bm2[k]) else abs(bm[m])
+        else:
+            new_bm[k] = -abs(bm[m]) if bm2[k] == -abs(bm2[k]) else (bm[m])
+
+        if bm[-1] == 1:
+            new_bm[-1] = 1
+
+        new_bm[0] = bm[0]
+        
+    return new_bm
+
+@njit(int8[:,:,:](int8[:,:,:],int8[:,:,:]),cache=True)
+def get_bms_new(base,matrix_base_maps):
+
+    new_base = np.zeros((fractal,2*genus,dim+2),dtype=np.int8)
+    for r in range(fractal):
+        for k in range(genus):
+        
+            index = matrix_base_maps[r][k][0]
+            bms = np.zeros((2,dim+2),dtype=np.int8)
+            bms[0] = base[index][0]
+            bms[1] = base[index][-1]
+
+            for m in range(2):
+                if matrix_base_maps[r][k][-1] == 1:
+                    if bms[m][-1] == 1:
+                        bms[m][-1] = 0
+                    else:
+                        bms[m][-1] = 1
+
+            if matrix_base_maps[r][k][-1] == 1:
+                new_base[r][2*k] = bms[1]
+                new_base[r][2*k+1] = bms[0]
+            else:
+                new_base[r][2*k] = bms[0]
+                new_base[r][2*k+1] = bms[1]
+                
+    return new_base
+
+@njit(int8[:,:,:](int8[:,:,:],int8),cache=True)
+def get_jun_new(matrix_base_maps,n):
+    
+    base = matrix_base_maps
+    
+    first = np.zeros((fractal,genus-1,n,dim+2),dtype=np.int8)
+    second = np.zeros((fractal,genus-1,n,dim+2),dtype=np.int8)
+    for r in range(fractal):
+        for k in range(genus-1):
+            first[r][k][0] = base[r][k]
+            second[r][k][0] = base[r][k+1]
+    
+    for l in range(n-1):
+        base = get_bms_new(base,matrix_base_maps)
+        for r in range(fractal):
+            for k in range(genus-1):
+                first[r][k][l+1] = base[r][2*k+1]
+                second[r][k][l+1] = base[r][2*k+2]
+
+    for r in range(fractal):
+        for l in range(genus-1):
+            for k in range(n-2,-1,-1):
+                first[r][l][-1] = get_bm_bm_new(first[r][l][k],first[r][l][-1])
+                second[r][l][-1] = get_bm_bm_new(second[r][l][k],second[r][l][-1])
+    
+    jun = np.zeros((fractal*(genus-1),2,dim+2),dtype=np.int8)
+    for r in range(fractal):    
+        for k in range(genus-1):
+            jun[(genus-1)*r+k][0] = first[r][k][-1]
+            jun[(genus-1)*r+k][1] = second[r][k][-1]
+            jun[(genus-1)*r+k] = get_time_norm_new(jun[(genus-1)*r+k])
+    
+    return jun
+
+@njit(int8[:,:,:](int8[:,:,:]),cache=True)
+def get_set(jun):
+    
+    for m in range(len(jun)-1,-1,-1):
+        for k in range(m-1,-1,-1):
+            if np.array_equal(jun[m],jun[k]):
+                
+                #Не работает третий аргумент delete
+                #jun = np.delete(jun, m, int8(0))
+                #Удаление стыка с помощью логической маски
+                mask = np.zeros(jun.shape[0], dtype=np.int8) == 0
+                mask[m] = False
+                jun = jun[mask]
+       
+                break
+    
+    return jun
+
+@njit(int8[:,:,:](int8[:,:,:]),cache=True)
+def get_junctions_new(matrix_base_maps):
+    
+    junctions = np.zeros((fractal*(genus-1),2,dim+2),dtype=np.int8)
+    for r in range(fractal):
+        for k in range(genus-1):
+            junctions[(genus-1)*r+k][0] = matrix_base_maps[r][k]
+            junctions[(genus-1)*r+k][1] = matrix_base_maps[r][k+1]
+
+    for k in range(fractal*(genus-1)):
+        junctions[k] = get_time_norm_new(junctions[k]) 
+
+    junctions = get_set(junctions)
+
+    for k in range(2,20):
+        jun = get_jun_new(matrix_base_maps,k)
+
+        N = len(junctions)
+        junctions = np.concatenate((junctions, jun), axis=0)
+    
+        junctions = get_set(junctions)
+
+        if N == len(junctions):
+            break
+    
+    #print('глубина кривой -',k-1)
+
+    return junctions
+
+def get_conv_jun(jun,dim):
+
+    d = { 1:'i', -1:'I', 2:'j', -2:'J', 3:'k', -3:'K'}
+
+    conv_jun = []
+    for k in jun:
+        bm1 = str(k[0][0]) + 'ijk'
+        
+        if str(k[0][-1]) == 1:
+            bm1 = bm1 + '~'         
+        
+        bm2 = str(k[1][0]) + ''.join(map(d.get, k[1][1:dim+1]))
+    
+        if str(k[1][-1]) == 1:
+            bm2 = bm2 + '~' 
+
+        conv_jun.append(tuple([bm1,bm2]))
+        
+    return conv_jun
+
+def is_junctions_perfect_new(base_maps):
+    #Проверяет все стыки кривой#
+    if self.coding_system == 'ijk->':
+        base_maps = self.get_vector_codes(base_maps)
+        
+    self.base_maps = base_maps
+
+    matrix_base_maps = get_matrix_base_maps()
+    junctions = get_junctions_new(matrix_base_maps)
+    junctions = get_conv_jun(junctions,dim)
+    
+    for m in junctions:
+        if self.is_junction_perfect(m[0],m[1]) == False:
+            return False,None,None
+            
+    return True,junctions,self.get_vertex_moments()
+
+
+chain_proto = ['kjKikJK','kiKjIki'] #(Токарев-Хаверкорт)
+#chain_proto = ['kijIKiJ','kiKjIki'] #(Шалыга-Хаверкорт)
+
+Test = TestClass(chain_proto,'->ijk')
+self = Test
+
+
+
+@njit(int8[:,:](int8[:,:],int8[:]),cache=True)
+def get_fraction_new(sub,bm):
+
+    if bm[-1] == 1:
+        # Меняем напраления векторов
+        bm = -bm[:-1]
+        # Проходим вектора в обратном порядке
+        sub = sub[::-1,:]
+
+    # Поворачиваем фракцию
+    sub = np.column_stack((np.sign(bm[0])*sub[:,abs(bm[0])-1],
+                           np.sign(bm[1])*sub[:,abs(bm[1])-1],
+                           np.sign(bm[2])*sub[:,abs(bm[2])-1])) 
+    
+    return sub
+
+@njit(boolean(int8[:,:,:]),cache=True)
+def is_junction_perfect_new(junctions):
+    
+    #Кривая Токорева
+    cut_chain_proto_np = np.array([[[0,0,1],[0,0,-1]],
+                                   [[0,0,1],[1,0,0]]],dtype=np.int8)
+    
+    #Кривая Шалыги
+    #cut_chain_proto_np = np.array([[[0,0,1],[0,-1,0]],
+    #                               [[0,0,1],[1,0,0]]],dtype=np.int8)
+    
+    for k in range(len(junctions)):
+        
+        bm1 = junctions[k][0]
+        bm2 = junctions[k][1]
+        
+        first_fraction  = get_fraction_new(cut_chain_proto_np[bm1[0]],bm1[1:])
+        second_fraction = get_fraction_new(cut_chain_proto_np[bm2[0]],bm2[1:])
+        
+        if np.array_equal(first_fraction[-1],-second_fraction[0])==False:
+            return False
+        
+    return True
+
+
+proto = self.get_proto()[0]
+grid,type_grid = self.get_grid(proto)
+tran_broken,vect_tran_broken = self.get_tran_broken(grid,type_grid)
+rotation_groups_1 = self.get_rotation_groups(proto)#,True
+
+curve_1 = []
+for k in rotation_groups_1: 
+    curve_1 += self.gef_perfect_curve(k)
+print(len(curve_1),'- кривые с совершенными стыками на первом подразделении')
+
+proto = self.get_proto()[1]
+grid,type_grid = self.get_grid(proto)
+tran_broken,vect_tran_broken = self.get_tran_broken(grid,type_grid)
+rotation_groups_2 = self.get_rotation_groups(proto)#,True
+
+curve_2 = []
+for k in rotation_groups_2: 
+    curve_2 += self.gef_perfect_curve(k)
+print(len(curve_2),'- кривые с совершенными стыками на первом подразделении')
+
+
+x = 0
+for k in range(len(rotation_groups_1)):
+    g = 1
+    for m in range(self.genus):
+        g *= len(rotation_groups_1[k][m])
+    x += g 
+
+y = 0
+for k in range(len(rotation_groups_2)):
+    g = 1
+    for m in range(self.genus):
+        g *= len(rotation_groups_2[k][m])
+    y += g 
+
+print('общее количество кривых - ',x*y)
+
+
+
+
+def search_curve(curve_1,curve_2):
+    
+    c1 = get_all_matrix_base_maps(curve_1)
+    c2 = get_all_matrix_base_maps(curve_2)
+
+    all_base_maps = []
+    all_junctions = []
+    for k in range(len(c1)):
+        #t = time.time()
+        for m in range(len(c2)):
+
+            junctions = get_junctions_new(np.array([c1[k],c2[m]],dtype=np.int8))
+
+            if is_junction_perfect_new(junctions)==True:
+                all_junctions.append(get_conv_jun(junctions,dim))
+                all_base_maps.append([curve_1[k],curve_2[m]])
+                
+        #elapsed = time.time() - t
+        #print(k,' - ',elapsed)
+
+    return all_base_maps,all_junctions
+
+
+t = time.time()
+
+all_base_maps,all_junctions = search_curve(curve_1,curve_2)
+
+elapsed = time.time() - t
+print('время перебора -', elapsed)
+
+
+all_vertex_moments = []
+for k in range(len(all_base_maps)):
+    self.base_maps = all_base_maps[k]
+    all_vertex_moments.append(self.get_vertex_moments())
+    
+
+
+sub_numb = 2
+n = (2**self.dim-1)*self.genus**sub_numb
+
+@njit(float64(int32[:,:],int32[:,:],int32[:],int32[:]),parallel=True,cache=True)
+def get_ratio_l1_3d(x1,x2,t1,t2):
+        
+    z = np.zeros(n)
+    for m in prange(n):
+    
+        z[m] = np.max((np.absolute(x1[m,0]-x2[:,0])+
+                       np.absolute(x1[m,1]-x2[:,1])+
+                       np.absolute(x1[m,2]-x2[:,2]))**3/
+                       (t2-t1[m]));
+            
+    return np.max(z)
+
+
+@njit(float64(int32[:,:],int32[:,:],int32[:],int32[:]),parallel=True,cache=True)
+def get_ratio_l2_3d(x1,x2,t1,t2):
+        
+    z = np.zeros(n)
+    for m in prange(n):
+    
+        z[m] = np.max(((x1[m,0]-x2[:,0])**2+
+                       (x1[m,1]-x2[:,1])**2+
+                       (x1[m,2]-x2[:,2])**2)**(3/2)/
+                       (t2-t1[m]));
+            
+    return np.max(z)
+
+
+t = time.time()
+
+all_ratio = []
+for m in range(len(all_base_maps)):
+    
+    self.base_maps = all_base_maps[m]
+
+    ratio = [get_junction_ratio(k,all_vertex_moments[m],sub_numb) for k in all_junctions[m]]
+    
+    all_ratio.append(max(ratio))
+
+
+elapsed = time.time() - t
+print('время вычисления l1 - ',elapsed)
+
+
+
+
