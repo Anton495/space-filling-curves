@@ -8,14 +8,14 @@ Here are the main characteristics of some curves.
 |:---                   |  :---:  |  :---:  |  :---:  |:---                |  :---: |  :---:  |  :---: |
 |**Triangular Curve**   |         |         |         |**Bi-fractal Curve**                            |
 |H Curve                |    4    |    4    |    8    |Spring Curve        |        |**16.99**|  82.9  |
-|Sierpinski-Knopp Curve |    4    |    4    |    8    |Neptunus Curve      |**9.45**|**18.3** |  88.9  |
-|**Bi-fractal Curve**   |         |         |         |Luna Curve          |  14.0  |**18.3** |**75.6**|
+|Sierpinski-Knopp Curve |    4    |    4    |    8    |Neptunus Curve      |**9.45**|  18.3   |  88.9  |
+|**Bi-fractal Curve**   |         |         |         |Luna Curve          |  14.0  |  18.3   |**75.6**|
 |Beta Omega Curve       |    5    |    5    |    9    |**Mono-fractal Curve**                          |
-|**Mono-fractal Curve** |         |         |         |Haverkort Curve 1   |**12.4**| 22.9    |  99.6  |
+|**Mono-fractal Curve** |         |         |         |Haverkort Curve 1   |**12.4**|  22.9   |  99.6  |
 |Ye Curve               |         |**5.589**|         |Haverkort Curve 2   |  14.0  |**18.6** |**89.8**|
 |Hilbert Curve          |    6    |    6    |  **9**  |Tokarev Curve       |  24.2  |  26.2   |  98.3  |
-|Meurthe Curve          |  5.333  |**5.667**| 10.667  |
-|Bauman Curve           | **4.5** |**5.667**|         |
+|Meurthe Curve          |  5.333  |  5.667  | 10.667  |
+|Bauman Curve           | **4.5** |  5.667  |         |
 |Sepentine Curve        |  5.625  |  6.250  |   10    |
 |Coil Curve, R Curve    |  6.667  |  6.667  | 10.667  |
 |Peano Curve            |    8    |    8    | 10.667  |
