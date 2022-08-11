@@ -104,6 +104,7 @@ def get_test_curve():
                            'Ji~','jI~','ij','ij','Ji~','jI~','ij',
                            'ij','ij','IJ','Ji~','Ji~','ij','IJ',
                            'Ji~','Ji~','ij','IJ','Ji~','Ji~','ij']]
+    )
 
 def get_haverkort_curve_1():
     return FractalCurve(
