@@ -1,4 +1,4 @@
-# Fractals Curves
+# Fractal Curves
 
 Here are the main characteristics of some curves.
 
