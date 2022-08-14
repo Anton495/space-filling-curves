@@ -1,7 +1,5 @@
 # Fractals Curves
 
-This module realize poly-fractal curves generating system. It allows to generate n-dimensional  continuous curves coordinates and to plot poly-fractal 2D and 3D curves.
-
 Here are the main characteristics of some curves.
 
 |2D Curve               |  L_inf  |   L_2   |   L_1   |3D Curve            |  L_inf |   L_2   |   L_1   |
@@ -23,4 +21,4 @@ Here are the main characteristics of some curves.
 |ARW Curve              |   5.4   |  6.046  |   12    |
 
 
-The module has been tested to work on Python 3.7.0. It requires NumPy, SymPy, Itertools, Functools, Math and Matplotlib.
+The module has been tested to work on Python 3.7.0. It requires NumPy, SymPy, Itertools, Functools, Math, Numba and Matplotlib.
