@@ -13,7 +13,7 @@ Here are the main characteristics of some curves.
 |Ye Curve               |         |**5.589**|         |        |
 |Hilbert Curve          |    6    |    6    |  **9**  |  2.4   |
 |Meurthe Curve          |  5.333  |  5.667  | 10.667  |  2.5   |
-|Bauman Curve           | **4.5** |  5.667  |         |        |
+|Bauman Curve           | **4.5** |  5.667  |         |  2.5   |
 |Sepentine Curve        |  5.625  |  6.250  |   10    |        |
 |Coil Curve, R Curve    |  6.667  |  6.667  | 10.667  |  2.5   |
 |Peano Curve            |    8    |    8    | 10.667  |   2    |
