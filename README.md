@@ -19,7 +19,9 @@ Here are the main characteristics of some curves.
 |Peano Curve            |    8    |    8    | 10.667  |
 |**Tetra-fractal Curve**|         |         |         |
 |ARW Curve              |   5.4   |  6.046  |   12    |
-|**3D Curve**           |         |         |         |
+
+|3D Curve               |  L_inf  |   L_2   |   L_1   |
+|:---                   |  :---:  |  :---:  |  :---:  |
 |**Bi-fractal Curve**                                 |
 |Spring Curve           |         |**16.99**|  82.95  |
 |Neptunus Curve         |**9.45** |  18.3   |  88.9   |
