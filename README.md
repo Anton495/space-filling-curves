@@ -2,23 +2,23 @@
 
 Here are the main characteristics of some curves.
 
-|2D Curve               |  L_inf  |   L_2   |   L_1   |   WBA  |
-|:---                   |  :---:  |  :---:  |  :---:  |  :---: |
-|**Triangular Curve**   |         |         |         |        |
-|H Curve                |    4    |    4    |    8    |        |
-|Sierpinski-Knopp Curve |    4    |    4    |    8    |        |
-|**Bi-fractal Curve**   |         |         |         |        |
-|Beta Omega Curve       |    5    |    5    |    9    |        |
-|**Mono-fractal Curve** |         |         |         |        |
-|Ye Curve               |         |**5.589**|         |        |
-|Hilbert Curve          |    6    |    6    |  **9**  |  2.4   |
-|Meurthe Curve          |  5.333  |  5.667  | 10.667  |  2.5   |
-|Bauman Curve           | **4.5** |  5.667  |         |  2.5   |
-|Sepentine Curve        |  5.625  |  6.250  |   10    |        |
-|Coil Curve, R Curve    |  6.667  |  6.667  | 10.667  |  2.5   |
-|Peano Curve            |    8    |    8    | 10.667  |   2    |
-|**Tetra-fractal Curve**|         |         |         |        |
-|ARW Curve              |   5.4   |  6.046  |   12    |        |
+|2D Curve               |  L_inf  |   L_2   |   L_1   |   WBA  |   WBP  |
+|:---                   |  :---:  |  :---:  |  :---:  |  :---: |  :---: |
+|**Triangular Curve**   |         |         |         |        |        |
+|H Curve                |    4    |    4    |    8    |        |        |
+|Sierpinski-Knopp Curve |    4    |    4    |    8    |        |        |
+|**Bi-fractal Curve**   |         |         |         |        |        |
+|Beta Omega Curve       |    5    |    5    |    9    |        |        |
+|**Mono-fractal Curve** |         |         |         |        |        |
+|Ye Curve               |         |**5.589**|         |        |        |
+|Hilbert Curve          |    6    |    6    |  **9**  |  2.4   |  2.4   |
+|Meurthe Curve          |  5.333  |  5.667  | 10.667  |  2.5   |  2.667 |
+|Bauman Curve           | **4.5** |  5.667  |         |  2.5   |  2.667 |
+|Sepentine Curve        |  5.625  |  6.250  |   10    |  2.5   |  2.5   |
+|Coil Curve, R Curve    |  6.667  |  6.667  | 10.667  |  2.5   |  2.667 |
+|Peano Curve            |    8    |    8    | 10.667  |   2    |  2.722 |
+|**Tetra-fractal Curve**|         |         |         |        |        |
+|ARW Curve              |   5.4   |  6.046  |   12    |        |        |
 
 |3D Curve               |  L_inf  |   L_2   |   L_1   |
 |:---                   |  :---:  |  :---:  |  :---:  |
