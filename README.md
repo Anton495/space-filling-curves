@@ -8,9 +8,9 @@ Here are the main characteristics of some curves.
 |H Curve                |    4    |    4    |    8    |        |        |
 |Sierpinski-Knopp Curve |    4    |    4    |    8    |        |        |
 |**Bi-fractal Curve**   |         |         |         |        |        |
-|Beta Omega Curve       |    5    |    5    |    9    |        |        |
+|Beta Omega Curve       |    5    |    5    |    9    |  2.222 |  2.25  |
 |**Mono-fractal Curve** |         |         |         |        |        |
-|Ye Curve               |         |**5.589**|         |        |        |
+|Ye Curve               |         |**5.589**|         |  2.5   |  2.667 |
 |Hilbert Curve          |    6    |    6    |  **9**  |  2.4   |  2.4   |
 |Meurthe Curve          |  5.333  |  5.667  | 10.667  |  2.5   |  2.667 |
 |Bauman Curve           | **4.5** |  5.667  |         |  2.5   |  2.667 |
