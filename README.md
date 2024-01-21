@@ -18,7 +18,7 @@ Here are the main characteristics of some curves.
 |Coil Curve, R Curve    |  6.667  |  6.667  | 10.667  |  2.5   |  2.667 |
 |Peano Curve            |    8    |    8    | 10.667  |   2    |  2.722 |
 |**Tetra-fractal Curve**|         |         |         |        |        |
-|ARW Curve              |   5.4   |  6.046  |   12    |        |        |
+|ARW Curve              |   5.4   |  6.046  |   12    | 3.055  | 3.125  |
 
 |3D Curve               |  L_inf  |   L_2   |   L_1   |
 |:---                   |  :---:  |  :---:  |  :---:  |
