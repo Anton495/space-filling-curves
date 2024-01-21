@@ -20,15 +20,15 @@ Here are the main characteristics of some curves.
 |**Tetra-fractal Curve**|         |         |         |        |        |
 |ARW Curve              |   5.4   |  6.046  |   12    | 3.055  | 3.125  |
 
-|3D Curve               |  L_inf  |   L_2   |   L_1   |
-|:---                   |  :---:  |  :---:  |  :---:  |
-|**Bi-fractal Curve**                                 |
-|Spring Curve           |         |**16.99**|  82.95  |
-|Neptunus Curve         |**9.45** |  18.3   |  88.9   |
-|Luna Curve             |  14.0   |  18.3   |**75.6** |
-|**Mono-fractal Curve**                               |
-|Haverkort Curve 1      |**12.4** |  22.9   |  99.6   |
-|Haverkort Curve 2      |  14.0   |**18.6** |**89.8** |
-|Tokarev Curve          |  24.2   |  26.2   |  98.3   |
+|3D Curve               |  L_inf  |   L_2   |   L_1   |   WBA  |   WBP  |
+|:---                   |  :---:  |  :---:  |  :---:  |  :---: |  :---: |
+|**Bi-fractal Curve**   |         |         |         |        |        |
+|Spring Curve           |         |**16.99**|  82.95  |        |        |
+|Neptunus Curve         |**9.45** |  18.3   |  88.9   |        |        |
+|Luna Curve             |  14.0   |  18.3   |**75.6** |        |        |
+|**Mono-fractal Curve**           |         |         |        |        |
+|Haverkort Curve 1      |**12.4** |  22.9   |  99.6   |        |        |
+|Haverkort Curve 2      |  14.0   |**18.6** |**89.8** |        |        |
+|Tokarev Curve          |  24.2   |  26.2   |  98.3   |        |        |
 
 The module has been tested to work on Python 3.7.0. It requires NumPy, SymPy, Itertools, Functools, Math, Numba and Matplotlib.
