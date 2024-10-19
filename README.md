@@ -25,7 +25,7 @@ Here are the main characteristics of some curves.
 |**Bi-fractal Curve**   |                                               |
 |Spring Curve           |         |**16.99**|  82.95  |  2.91  |  ?2.99 |
 |Neptunus Curve         |**9.45** |  18.3   |  88.9   |  3.11  |  ?3.19 |
-|Luna Curve             |  14.0   |  18.3   |**75.6** |  ?2.8  |  ?2.8  |
+|Luna Curve             |  14.0   |  18.3   |**75.6** |**?2.8**|**?2.8**|
 |**Mono-fractal Curve**                                                 |
 |Haverkort Curve 1      |**12.4** |  22.9   |  99.6   |  3.11  |  ?3.35 |
 |Haverkort Curve 2      |  14.0   |**18.6** |**89.8** |  3.14  |  ?3.22 |
